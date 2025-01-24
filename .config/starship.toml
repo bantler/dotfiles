@@ -1,15 +1,20 @@
 # ~/.config/starship.toml
 
+# Get editor completions based on the config schema
+"$schema" = 'https://starship.rs/config-schema.json'
+
+# Sets user-defined palette
+# Palettes must be defined _after_ this line
+palette = "bantler"
+
 add_newline = false
 command_timeout = 1000
-format = """$os$username$hostname$kubernetes$directory$git_branch$git_status\n"""
+format = """$os$username$hostname$kubernetes$directory$git_branch$git_status\n❯ """
 
 # Drop ugly default prompt characters
 [character]
 success_symbol = ''
 error_symbol = ''
-
-# ---
 
 [os]
 format = '[$symbol](bold white) '
@@ -19,14 +24,15 @@ disabled = false
 Windows = ' '
 Arch = '󰣇'
 Ubuntu = ''
-Macos = '󰀵'
-
-# ---y
+Debian = " "
+Alpine = " "
+Android = " "
+Raspbian = " "
 
 # Shows the username
 [username]
-style_user = 'white bold'
-style_root = 'black bold'
+style_user = 'pink bold'
+style_root = 'base bold'
 format = '[$user]($style) '
 disabled = false
 show_always = true
@@ -35,7 +41,7 @@ aliases = { "bantl" = "bantler" }
 # Shows the hostname
 [hostname]
 ssh_only = false
-format = 'on [$hostname](bold yellow) '
+format = 'on [$hostname](bold purple) '
 disabled = false
 
 # Shows current directory
@@ -47,10 +53,20 @@ read_only_style = '197'
 read_only = '  '
 format = 'at [$path]($style)[$read_only]($read_only_style) '
 
+# Palette definitions
+[palettes.bantler]
+pink = "#ff5eed"
+purple = "#ba5aff"
+blue = "#5c78ff"
+lightblue = "#5ac8ff"
+green = "#5effc3"
+base = "#d1d1d1"
+
 # Shows current git branch
 [git_branch]
 symbol = ' '
 format = 'via [$symbol$branch]($style)'
+
 # truncation_length = 4
 truncation_symbol = '…/'
 style = 'bold green'
@@ -71,12 +87,19 @@ staged = '[󰐗 staged=${count}](green) '
 renamed = '[󱍸 renamed=${count}](yellow) '
 deleted = '[󰍶 deleted=${count}](red) '
 
+[package]
+symbol = "󰏗 "
+
+[python]
+symbol = " "
+
+[scala]
+symbol = " "
+
 # Shows kubernetes context and namespace
 [kubernetes]
 format = 'via [󱃾 $context\($namespace\)](bold purple)'
 disabled = false
-
-# ---
 
 [vagrant]
 disabled = true
