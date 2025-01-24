@@ -1,3 +1,5 @@
-$ENV:STARSHIP_CONFIG = "$HOME\.starship\starship.toml"
-$ENV:STARSHIP_DISTRO = "者 bantlerhq"
+$ENV:STARSHIP_CONFIG = "$HOME\.config\starship.toml"
 Invoke-Expression (&starship init powershell)
+
+# set custom alias'
+Set-Alias -Name tf -Value terraform
