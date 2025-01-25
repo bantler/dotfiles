@@ -3,18 +3,49 @@
 # Get editor completions based on the config schema
 "$schema" = 'https://starship.rs/config-schema.json'
 
+# Inserts a blank line between shell prompts
+add_newline = true
+command_timeout = 1000
+
 # Sets user-defined palette
 # Palettes must be defined _after_ this line
 palette = "bantler"
 
-add_newline = false
-command_timeout = 1000
-format = """$os$username$hostname$kubernetes$directory$git_branch$git_status\n❯ """
+# Change the default prompt format
+format = """\
+[╭╴](238)\
+$os\
+$username\
+$hostname\
+$directory\
+$git_branch\
+$git_status\
+[╰─](238)\
+$character"""
 
-# Drop ugly default prompt characters
+right_format = """
+$kubernetes\
+$docker_context\
+$package\
+$dotnet\
+$lua\
+$python\
+$scala\
+$terraform\
+$memory_usage\
+$aws\
+$gcloud\
+$azure\
+$battery\
+$time"""
+
+[fill]
+symbol = ' '
+
+# Change the default prompt characters
 [character]
-success_symbol = ''
-error_symbol = ''
+success_symbol = ""
+error_symbol = ""
 
 [os]
 format = '[$symbol](bold white) '
@@ -46,7 +77,7 @@ disabled = false
 
 # Shows current directory
 [directory]
-truncation_length = 1
+truncation_length = 3
 truncation_symbol = '…/'
 home_symbol = '󰋜 ~'
 read_only_style = '197'
@@ -92,9 +123,19 @@ symbol = "󰏗 "
 
 [python]
 symbol = " "
+python_binary = "python3"
 
 [scala]
 symbol = " "
+
+[azure]
+format = 'on [$symbol($subscription)]($style) '
+symbol = '󰠅 '
+style = 'blue bold'
+disabled = false
+
+[azure.subscription_aliases]
+pay-as-you-go-subscription = 'PAYG'
 
 # Shows kubernetes context and namespace
 [kubernetes]
