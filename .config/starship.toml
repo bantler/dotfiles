@@ -128,8 +128,13 @@ python_binary = "python3"
 [scala]
 symbol = " "
 
+[aws]
+format = '[$symbol($profile )(\($region\) )(\[$duration\] )]($style)'
+symbol = " "
+style = "lightblue bold"
+
 [azure]
-format = 'on [$symbol($subscription)]($style) '
+format = '[$symbol($subscription)]($style) '
 symbol = '󰠅 '
 style = 'blue bold'
 disabled = false
