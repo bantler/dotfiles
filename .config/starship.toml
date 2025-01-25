@@ -9,7 +9,7 @@ command_timeout = 1000
 
 # Sets user-defined palette
 # Palettes must be defined _after_ this line
-palette = "bantler"
+palette = 'bantler'
 
 # Change the default prompt format
 format = """\
@@ -20,32 +20,26 @@ $hostname\
 $directory\
 $git_branch\
 $git_status\
+$fill\
+$all\
 [╰─](238)\
 $character"""
 
-right_format = """
-$kubernetes\
-$docker_context\
-$package\
-$dotnet\
-$lua\
-$python\
-$scala\
-$terraform\
-$memory_usage\
-$aws\
-$gcloud\
-$azure\
-$battery\
-$time"""
+# Palette definitions
+[palettes.bantler]
+pink = '#ff5eed'
+purple = '#ba5aff'
+blue = '5c78ff'
+lightblue = '#5ac8ff'
+green = '#5effc3'
+base = '#d1d1d1'
 
 [fill]
 symbol = ' '
 
-# Change the default prompt characters
-[character]
-success_symbol = ""
-error_symbol = ""
+# Replace the '❯' symbol in the prompt with '➜'
+[character] # The name of the module we are configuring is 'character'
+success_symbol = '[❯](bold green)' # The 'success_symbol' segment is being set to '➜' with the color 'bold green'
 
 [os]
 format = '[$symbol](bold white) '
@@ -54,11 +48,11 @@ disabled = false
 [os.symbols]
 Windows = ' '
 Arch = '󰣇'
-Ubuntu = ''
-Debian = " "
-Alpine = " "
-Android = " "
-Raspbian = " "
+Ubuntu = ' '
+Debian = ' '
+Alpine = ' '
+Android = ' '
+Raspbian = ' '
 
 # Shows the username
 [username]
@@ -67,7 +61,7 @@ style_root = 'base bold'
 format = '[$user]($style) '
 disabled = false
 show_always = true
-aliases = { "bantl" = "bantler" }
+aliases = { 'bantl' = 'bantler' }
 
 # Shows the hostname
 [hostname]
@@ -81,17 +75,8 @@ truncation_length = 3
 truncation_symbol = '…/'
 home_symbol = '󰋜 ~'
 read_only_style = '197'
-read_only = '  '
-format = 'at [$path]($style)[$read_only]($read_only_style) '
-
-# Palette definitions
-[palettes.bantler]
-pink = "#ff5eed"
-purple = "#ba5aff"
-blue = "#5c78ff"
-lightblue = "#5ac8ff"
-green = "#5effc3"
-base = "#d1d1d1"
+read_only = ' '
+format = 'at [$path]($style)[$read_only]($read_only_style)'
 
 # Shows current git branch
 [git_branch]
@@ -106,43 +91,42 @@ style = 'bold green'
 [git_status]
 format = '([ \( $all_status$ahead_behind\)]($style) )'
 style = 'bold green'
-conflicted = '[ confliced=${count}](red) '
-up_to_date = '[󰘽 up-to-date](green) '
-untracked = '[󰋗 untracked=${count}](red) '
+conflicted = '[ confliced=${count}](red)'
+up_to_date = '[󰘽 up-to-date](green)'
+untracked = '[󰋗 untracked=${count}](red)'
 ahead = ' ahead=${count}'
 diverged = ' ahead=${ahead_count}  behind=${behind_count}'
 behind = ' behind=${count}'
-stashed = '[ stashed=${count}](green) '
-modified = '[󰛿 modified=${count}](yellow) '
-staged = '[󰐗 staged=${count}](green) '
-renamed = '[󱍸 renamed=${count}](yellow) '
-deleted = '[󰍶 deleted=${count}](red) '
+stashed = '[ stashed=${count}](green)'
+modified = '[󰛿 modified=${count}](yellow)'
+staged = '[󰐗 staged=${count}](green)'
+renamed = '[󱍸 renamed=${count}](yellow)'
+deleted = '[󰍶 deleted=${count}](red)'
 
 [package]
-symbol = "󰏗 "
+symbol = '󰏗 '
 
 [python]
-symbol = " "
-python_binary = "python3"
+symbol = ' '
+python_binary = 'python3'
 
 [scala]
-symbol = " "
+symbol = ' '
 
 [aws]
 format = '[$symbol($profile )(\($region\) )(\[$duration\] )]($style)'
-symbol = " "
-style = "lightblue bold"
+symbol = ' '
+style = 'lightblue bold'
 
 [azure]
-format = '[$symbol($subscription)]($style) '
+format = '[$symbol($subscription)]($style)'
 symbol = '󰠅 '
-style = 'blue bold'
+style = 'lightblue bold'
 disabled = false
 
 [azure.subscription_aliases]
 pay-as-you-go-subscription = 'PAYG'
 
-# Shows kubernetes context and namespace
 [kubernetes]
 format = 'via [󱃾 $context\($namespace\)](bold purple)'
 disabled = false
