@@ -395,6 +395,15 @@ properties:
         id: "chrisant996.Clink"
         source: winget
       id: chrisant996.Clink
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Installing Fastfetch-cli.Fastfetch
+        allowPrerelease: true
+        securityContext: current
+      settings:
+        id: "Fastfetch-cli.Fastfetch"
+        source: winget
+      id: Fastfetch-cli.Fastfetch
     - resource: GitDsc/GitClone
       directives:
         description: 'Cloning: dotfiles'

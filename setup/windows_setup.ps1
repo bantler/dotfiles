@@ -1,12 +1,6 @@
 # Set Execution policy
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 
-# Download packages
-Invoke-RestMethod -Uri https://get.scoop.sh | Invoke-Expression
-
-# Install macchina
-scoop install macchina
-
 # Install NerdFonts Module
 Install-PSResource -Name NerdFonts
 Import-Module -Name NerdFonts
