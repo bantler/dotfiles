@@ -29,3 +29,9 @@ if [ -f "${SSH_ENV}" ]; then
 else
     start_agent;
 fi
+
+source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
+source ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
+autoload -U +X bashcompinit && bashcompinit
+complete -o nospace -C /usr/bin/terraform terraform
