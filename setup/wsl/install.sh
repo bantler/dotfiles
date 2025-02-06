@@ -64,6 +64,7 @@ fi
 echo "User $username created successfully."
 
 home_dir="/home/$username"
+echo $home_dir
 cd "$home_dir"
 
 # # change user
