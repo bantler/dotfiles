@@ -71,7 +71,7 @@ echo "Switching user to $username"
 su - bantler
 
 # # touch hushlogin
-echo "Createing hushlogin"
+echo "Creating hushlogin"
 touch ~/.hushlogin
 
 # # Create ssh key
