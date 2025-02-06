@@ -47,40 +47,44 @@ if id "$new_user" &>/dev/null; then
     exit 1
 fi
 
-# Create the user without prompting for additional details
+# Create the user without interactive prompts
 sudo adduser --gecos "" "$new_user"
 
-# Set password securely
+# Force password input using /dev/tty
 while true; do
-    read -s -p "Enter a password for $new_user: " user_pass </dev/tty
-    echo
-    read -s -p "Confirm password: " user_pass_confirm </dev/tty
-    echo
+    echo -n "Enter a password for $new_user: " > /dev/tty
+    read -s user_pass < /dev/tty
+    echo > /dev/tty
+    echo -n "Confirm password: " > /dev/tty
+    read -s user_pass_confirm < /dev/tty
+    echo > /dev/tty
+
     if [[ "$user_pass" == "$user_pass_confirm" ]]; then
         echo "$new_user:$user_pass" | sudo chpasswd
         break
     else
-        echo "Passwords do not match. Please try again."
+        echo "Passwords do not match. Please try again." > /dev/tty
     fi
 done
 
 # Ensure the password change was successful
 if [[ $? -ne 0 ]]; then
-    echo "Error setting password. Exiting."
+    echo "Error setting password. Exiting." > /dev/tty
     exit 1
 fi
 
 # Ask if the user should have sudo access
 while true; do
-    read -p "Grant sudo access to $new_user? (y/n): " sudo_access </dev/tty
+    echo -n "Grant sudo access to $new_user? (y/n): " > /dev/tty
+    read sudo_access < /dev/tty
     case "$sudo_access" in
-        [Yy]* ) sudo usermod -aG sudo "$new_user"; echo "$new_user has been added to the sudo group."; break;;
-        [Nn]* ) echo "Skipping sudo access."; break;;
-        * ) echo "Please answer y or n.";;
+        [Yy]* ) sudo usermod -aG sudo "$new_user"; echo "$new_user has been added to the sudo group." > /dev/tty; break;;
+        [Nn]* ) echo "Skipping sudo access." > /dev/tty; break;;
+        * ) echo "Please answer y or n." > /dev/tty;;
     esac
 done
 
-echo "User $new_user created successfully."
+echo "User $new_user created successfully." > /dev/tty
 
 break
 
