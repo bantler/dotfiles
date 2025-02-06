@@ -63,9 +63,12 @@ fi
 
 echo "User $username created successfully."
 
-# change user
-echo "Switching user to $username"
-su - $username
+home_dir="/home/$username"
+cd "$home_dir"
+
+# # change user
+# echo "Switching user to $username"
+# su - $username
 
 # # Set new user as default in wsl
 # echo -e "[user]\ndefault=bantler" | sudo tee -a /etc/wsl.conf > /dev/null
@@ -76,10 +79,6 @@ touch ~/.hushlogin
 
 # # # Create ssh key
 echo "Creating SSH Key."
-
-home_dir="/home/$username"
-cd "$home_dir"
-
 # sudo -u "$username" ssh-keygen -t ed25519 -f /home/$username/.ssh/id_ed25519.pub
 
 # ssh_pub_key=$(< ~/.ssh/id_ed25519.pub)
