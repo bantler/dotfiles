@@ -39,7 +39,7 @@ curl -sS https://starship.rs/install.sh | shell
 
 # Install apps
 sudo apt-get update
-sudo apt-get install -y wget gpg gnupg apt-transport-https software-properties-common apt-transport-https -y
+sudo apt-get install -y ca-certificates curl lsb-release wget gpg gnupg apt-transport-https software-properties-common apt-transport-https -y
 
 wget -q "https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/packages-microsoft-prod.deb"
 sudo dpkg -i packages-microsoft-prod.deb
@@ -49,10 +49,18 @@ sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/
 echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" |sudo tee /etc/apt/sources.list.d/vscode.list > /dev/null
 rm -f packages.microsoft.gpg
 
-sudo apt-get install code
-sudo apt-get install powershell -y
+sudo mkdir -p /etc/apt/keyrings
+curl -sLS https://packages.microsoft.com/keys/microsoft.asc |
+gpg --dearmor | sudo tee /etc/apt/keyrings/microsoft.gpg > /dev/null
+sudo chmod go+r /etc/apt/keyrings/microsoft.gpg
 
-sudo apt-get install python3
+AZ_DIST=$(lsb_release -cs)
+echo "Types: deb
+URIs: https://packages.microsoft.com/repos/azure-cli/
+Suites: ${AZ_DIST}
+Components: main
+Architectures: $(dpkg --print-architecture)
+Signed-by: /etc/apt/keyrings/microsoft.gpg" | sudo tee /etc/apt/sources.list.d/azure-cli.sources
 
 wget -O- https://apt.releases.hashicorp.com/gpg | \
 gpg --dearmor | \
@@ -67,6 +75,14 @@ https://apt.releases.hashicorp.com $(lsb_release -cs) main" | \
 sudo tee /etc/apt/sources.list.d/hashicorp.list
 
 sudo apt-get update
+
+sudo apt-get install code
+sudo apt-get install powershell -y
+
+sudo apt-get install python3
+
+sudo apt-get install azure-cli
+
 sudo apt-get install terraform
 terraform -install-autocomplete
 
