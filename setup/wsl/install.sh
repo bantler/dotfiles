@@ -64,18 +64,14 @@ fi
 
 echo "User $username created successfully."
 
-# Create new user
-#sudo adduser bantler
-
-# grant admin to user and make default
-#sudo usermod -aG sudo bantler
-#echo -e "[user]\ndefault=bantler" | sudo tee -a /etc/wsl.conf > /dev/null
+# Set new user as default in wsl
+echo -e "[user]\ndefault=bantler" | sudo tee -a /etc/wsl.conf > /dev/null
 
 # change user
-# su - bantler
+su - bantler
 
 # # touch hushlogin
-# touch ~/.hushlogin
+touch ~/.hushlogin
 
 # # Create ssh key
 # sudo ssh-keygen -t ed25519
