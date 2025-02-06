@@ -63,13 +63,13 @@ fi
 
 echo "User $username created successfully."
 
-# Set new user as default in wsl
-echo -e "[user]\ndefault=bantler" | sudo tee -a /etc/wsl.conf > /dev/null
-
 # change user
 echo "Switching user to $username"
 sudo su - bantler
 ls -la
+
+# Set new user as default in wsl
+echo -e "[user]\ndefault=bantler" | sudo tee -a /etc/wsl.conf > /dev/null
 
 # # touch hushlogin
 echo "Creating hushlogin."
