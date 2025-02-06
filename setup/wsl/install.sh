@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# To install this script run ""
+# To install this script run "curl -sS https://raw.githubusercontent.com/bantler/dotfiles/refs/heads/main/setup/wsl/install.sh | sudo bash"
 
 # Update and upgrade
 sudo apt-get update
@@ -76,7 +76,7 @@ touch ~/.hushlogin
 
 # # Create ssh key
 echo "Creating SSH Key."
-sudo ssh-keygen -t ed25519
+ssh-keygen -t ed25519
 
 ssh_pub_key=$(< ~/.ssh/id_ed25519.pub)
 echo "$ssh_pub_key"
