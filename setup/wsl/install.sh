@@ -36,12 +36,33 @@ else
     exit 1
 fi
 
+# Prompt for username
+read -p "Enter new username: " new_user
+
+# Check if the user already exists
+if id "$new_user" &>/dev/null; then
+    echo "User '$new_user' already exists!"
+    exit 1
+fi
+
+# Create the user
+sudo adduser "$new_user"
+
+# Prompt for sudo access
+read -p "Grant sudo access to $new_user? (y/n): " sudo_access
+if [[ $sudo_access == "y" ]]; then
+    sudo usermod -aG sudo "$new_user"
+    echo "$new_user has been added to the sudo group."
+fi
+
+echo "User $new_user created successfully."
+
 # Create new user
-sudo adduser bantler
+#sudo adduser bantler
 
 # grant admin to user and make default
-sudo usermod -aG sudo bantler
-echo -e "[user]\ndefault=bantler" | sudo tee -a /etc/wsl.conf > /dev/null
+#sudo usermod -aG sudo bantler
+#echo -e "[user]\ndefault=bantler" | sudo tee -a /etc/wsl.conf > /dev/null
 
 # change user
 su - bantler
