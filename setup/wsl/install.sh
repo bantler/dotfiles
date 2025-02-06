@@ -40,14 +40,20 @@ fi
 echo "Enter new username"
 read -s new_user </dev/tty
 
+echo "Enter password for $username: "
+read -s password </dev/tty
+
 # Check if the user already exists
 if id "$new_user" &>/dev/null; then
     echo "User '$new_user' already exists!"
     exit 1
 fi
 
-# Create the user (will prompt for password)
-sudo adduser "$new_user"
+# Create the user
+sudo useradd -m -s /bin/bash "$username"  
+
+# Change user password
+echo "$username:$password" | sudo chpasswd
 
 # Prompt for sudo access
 read -p "Grant sudo access to $new_user? (y/n): " sudo_access </dev/tty
