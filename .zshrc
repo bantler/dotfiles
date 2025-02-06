@@ -14,6 +14,13 @@ source ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 autoload -U +X bashcompinit && bashcompinit
 complete -o nospace -C /usr/bin/terraform terraform
 
+autoload -Uz compinit
+compinit
+
+# Load Zoxide
+export PATH="$HOME/.local/bin:$PATH"
+eval "$(zoxide init zsh)"
+
 # Keybindings
 bindkey -e
 bindkey '^p' history-search-backward

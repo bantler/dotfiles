@@ -29,15 +29,12 @@ sudo apt-get install zsh
 # Make zsh the default shell
 sudo chsh -s /bin/zsh
 
-
+# Install zsh plugins
 git clone https://github.com/zsh-users/zsh-autosuggestions ~/.zsh/zsh-autosuggestions
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.zsh/zsh-syntax-highlighting
 git clone https://github.com/zsh-users/zsh-completions.git ~/.zsh/zsh-completions
 
-# Install starship
-curl -sS https://starship.rs/install.sh | shell
-
-# Install apps
+# Update and install dependhancies and remote so
 sudo apt-get update
 sudo apt-get install -y ca-certificates curl lsb-release wget gpg gnupg apt-transport-https software-properties-common apt-transport-https -y
 
@@ -76,19 +73,46 @@ sudo tee /etc/apt/sources.list.d/hashicorp.list
 
 sudo apt-get update
 
+# Install starship
+curl -sS https://starship.rs/install.sh | shell
+
+# Install vscode
 sudo apt-get install code
+
+# Install powershell
 sudo apt-get install powershell -y
 
+# Install Python and venv
 sudo apt-get install python3
+sudo apt install python3-venv -y
 
 sudo apt-get install azure-cli
 
+# Install Terraform and TFEnv
 sudo apt-get install terraform
 terraform -install-autocomplete
 
+git clone https://github.com/tfutils/tfenv.git ~/.tfenv
+echo 'export PATH="$HOME/.tfenv/bin:$PATH"' >> ~/.zprofile
+sudo ln -s ~/.tfenv/bin/* /usr/local/bin
+
+# Install cmatrix
 sudo apt-get install cmatrix -y
 
+# Install bat
 sudo apt-get install bat -y
 
+# Install fzf
 sudo apt-get install fzf
 
+# Install zoxide
+ sudo apt install zoxide
+
+ # Install eza
+sudo apt install eza -y
+
+# Install direnv
+sudo apt-get install direnv
+
+# Install jq
+sudo apt-get install jq -y
