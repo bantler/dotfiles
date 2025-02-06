@@ -1,14 +1,10 @@
 #!/bin/bash
 
-# To install this script run  sudo curl -sS https://raw.githubusercontent.com/bantler/dotfiles/refs/heads/main/setup/wsl/install.sh | bash
+# To install this script run "curl -sS https://raw.githubusercontent.com/bantler/dotfiles/refs/heads/main/setup/wsl/install.sh | sudo bash"
 
 # Update and upgrade
 sudo apt-get update
 sudo apt-get upgrade -y
-
-# Set root password
-#sudo passwd root
-#!/bin/bash
 
 # Check if the script is run as root
 if [[ $EUID -ne 0 ]]; then
@@ -16,12 +12,12 @@ if [[ $EUID -ne 0 ]]; then
    exit 1
 fi
 
-# Prompt user for new root password securely
+# Prompt user for new root password
 echo "Enter new root password:"
-read -s new_password </dev/tty
+read -s new_password
 
 echo "Confirm new root password:"
-read -s confirm_password </dev/tty
+read -s confirm_password
 
 # Check if passwords match
 if [[ "$new_password" != "$confirm_password" ]]; then
@@ -40,19 +36,36 @@ else
     exit 1
 fi
 
-
 # Create new user
-sudo adduser bantler
+read -p "Enter new username: " new_user
+sudo adduser "$new_user"
 
-# grant admin to user and make default
-sudo usermod -aG sudo bantler
+# Optionally, add to sudo group
+read -p "Grant sudo access? (y/n): " sudo_access
+if [[ $sudo_access == "y" ]]; then
+    sudo usermod -aG sudo "$new_user"
+    echo "$new_user added to sudo group."
+fi
+
+echo "User $new_user created successfully."
+# # Create new user
+# sudo adduser bantler
+
+# # Grant admin to user and make default
+# sudo usermod -aG sudo bantler
+
 echo -e "[user]\ndefault=bantler" | sudo tee -a /etc/wsl.conf > /dev/null
+
+# Change user
+su - bantler
+
+# Touch hushlogin 
 touch ~/.hushlogin
 
 # Create ssh key
 sudo ssh-keygen -t ed25519
 
-# Instal yadm and clone dotfiles repo
+# Install yadm and clone dotfiles repo
 sudo apt-get install yadm
 yadm clone git@github.com:bantler/dotfiles.git
 yadm status
