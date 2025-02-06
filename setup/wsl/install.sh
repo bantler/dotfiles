@@ -8,18 +8,20 @@ sudo apt-get upgrade -y
 
 # Set root password
 #sudo passwd root
+#!/bin/bash
+
 # Check if the script is run as root
 if [[ $EUID -ne 0 ]]; then
    echo "This script must be run as root. Try using sudo."
    exit 1
 fi
 
-# Prompt user for new root password
+# Prompt user for new root password securely
 echo "Enter new root password:"
-read -s new_password
+read -s new_password </dev/tty
 
 echo "Confirm new root password:"
-read -s confirm_password
+read -s confirm_password </dev/tty
 
 # Check if passwords match
 if [[ "$new_password" != "$confirm_password" ]]; then
@@ -37,6 +39,7 @@ else
     echo "Failed to change root password."
     exit 1
 fi
+
 
 # Create new user
 sudo adduser bantler
