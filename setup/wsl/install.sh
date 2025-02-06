@@ -12,12 +12,12 @@ if [[ $EUID -ne 0 ]]; then
    exit 1
 fi
 
-# Prompt user for new root password
+# Prompt user for new root password securely
 echo "Enter new root password:"
-read -s new_password
+read -s new_password </dev/tty
 
 echo "Confirm new root password:"
-read -s confirm_password
+read -s confirm_password </dev/tty
 
 # Check if passwords match
 if [[ "$new_password" != "$confirm_password" ]]; then
@@ -36,12 +36,23 @@ else
     exit 1
 fi
 
+# Change root password
+echo "root:$new_password" | chpasswd
+
+# Check if the password change was successful
+if [[ $? -eq 0 ]]; then
+    echo "Root password changed successfully."
+else
+    echo "Failed to change root password."
+    exit 1
+fi
+
 # Create new user
-read -p "Enter new username: " new_user
+read -s "Enter new username: " new_user </dev/tty
 sudo adduser "$new_user"
 
 # Optionally, add to sudo group
-read -p "Grant sudo access? (y/n): " sudo_access
+read -s "Grant sudo access? (y/n): " sudo_access </dev/tty
 if [[ $sudo_access == "y" ]]; then
     sudo usermod -aG sudo "$new_user"
     echo "$new_user added to sudo group."
