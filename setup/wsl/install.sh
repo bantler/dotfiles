@@ -76,21 +76,23 @@ touch ~/.hushlogin
 
 # # # Create ssh key
 echo "Creating SSH Key."
-#sudo -u bantler mkdir -p /home/bantler/.ssh
-#sudo -u bantler chmod 700 /home/bantler/.ssh
-sudo -u "$username" ssh-keygen -t ed25519 -f /home/$username/.ssh/id_ed25519.pub
 
-ssh_pub_key=$(< ~/.ssh/id_ed25519.pub)
-echo "$ssh_pub_key"
+home_dir="/home/$username"
+cd "$home_dir"
 
-echo "SSH Key has been generated, now copy to github then Press Y to continue..."
-while true; do
-    read -n 1 key
-    if [[ "$key" == "Y" || "$key" == "y" ]]; then
-        echo -e "\nContinuing..."
-        break
-    fi
-done
+# sudo -u "$username" ssh-keygen -t ed25519 -f /home/$username/.ssh/id_ed25519.pub
+
+# ssh_pub_key=$(< ~/.ssh/id_ed25519.pub)
+# echo "$ssh_pub_key"
+
+# echo "SSH Key has been generated, now copy to github then Press Y to continue..."
+# while true; do
+#     read -n 1 key
+#     if [[ "$key" == "Y" || "$key" == "y" ]]; then
+#         echo -e "\nContinuing..."
+#         break
+#     fi
+# done
 
 # # Instal yadm and clone dotfiles repo
 # sudo apt-get install yadm
