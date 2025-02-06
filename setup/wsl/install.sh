@@ -1,11 +1,42 @@
 #!/bin/bash
 
+# To install this script run  sudo curl -sS https://raw.githubusercontent.com/bantler/dotfiles/refs/heads/main/setup/wsl/install.sh | bash
+
 # Update and upgrade
 sudo apt-get update
 sudo apt-get upgrade -y
 
 # Set root password
-sudo passwd root
+#sudo passwd root
+# Check if the script is run as root
+if [[ $EUID -ne 0 ]]; then
+   echo "This script must be run as root. Try using sudo."
+   exit 1
+fi
+
+# Prompt user for new root password
+echo "Enter new root password:"
+read -s new_password
+
+echo "Confirm new root password:"
+read -s confirm_password
+
+# Check if passwords match
+if [[ "$new_password" != "$confirm_password" ]]; then
+    echo "Error: Passwords do not match."
+    exit 1
+fi
+
+# Change root password
+echo "root:$new_password" | chpasswd
+
+# Check if the password change was successful
+if [[ $? -eq 0 ]]; then
+    echo "Root password changed successfully."
+else
+    echo "Failed to change root password."
+    exit 1
+fi
 
 # Create new user
 sudo adduser bantler
