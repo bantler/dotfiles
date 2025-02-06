@@ -46,26 +46,26 @@ read -s password </dev/tty
 # Check if the user already exists
 if id "$username" &>/dev/null; then
     echo "User '$username' already exists!"
-    exit 1
+    break
+else
+    # Create the user
+    sudo useradd -m -s /bin/bash "$username"
+
+    # Change user password
+    echo "$username:$password" | sudo chpasswd
+
+    # Prompt for sudo access
+    read -p "Grant sudo access to $username? (y/n): " sudo_access </dev/tty
+    if [[ $sudo_access == "y" ]]; then
+        sudo usermod -aG sudo "$username"
+        echo "$username has been added to the sudo group."
+    fi
+
+    echo "User $username created successfully."
+    
+    # Set new user as default in wsl
+    echo -e "[user]\ndefault=bantler" | sudo tee -a /etc/wsl.conf > /dev/null
 fi
-
-# Create the user
-sudo useradd -m -s /bin/bash "$username"
-
-# Change user password
-echo "$username:$password" | sudo chpasswd
-
-# Prompt for sudo access
-read -p "Grant sudo access to $username? (y/n): " sudo_access </dev/tty
-if [[ $sudo_access == "y" ]]; then
-    sudo usermod -aG sudo "$username"
-    echo "$username has been added to the sudo group."
-fi
-
-echo "User $username created successfully."
-
-# Set new user as default in wsl
-echo -e "[user]\ndefault=bantler" | sudo tee -a /etc/wsl.conf > /dev/null
 
 # change user
 su - bantler
