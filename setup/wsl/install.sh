@@ -75,11 +75,11 @@ cd "$home_dir"
 # echo -e "[user]\ndefault=bantler" | sudo tee -a /etc/wsl.conf > /dev/null
 
 # # # touch hushlogin
-echo "Creating hushlogin."
-touch ~/.hushlogin
+# echo "Creating hushlogin."
+# touch ~/.hushlogin
 
 # # # Create ssh key
-echo "Creating SSH Key."
+# echo "Creating SSH Key."
 # sudo -u "$username" ssh-keygen -t ed25519 -f /home/$username/.ssh/id_ed25519.pub
 
 # ssh_pub_key=$(< ~/.ssh/id_ed25519.pub)
