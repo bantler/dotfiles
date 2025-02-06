@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# To install this script run "curl -sS https://raw.githubusercontent.com/bantler/dotfiles/refs/heads/main/setup/wsl/install.sh | sudo bash"
+# To install this script run ""
 
 # Update and upgrade
 sudo apt-get update
@@ -37,7 +37,7 @@ else
 fi
 
 # Prompt for username
-read -p "Enter new username: " new_user
+read -p "Enter new username: " new_user </dev/tty
 
 # Check if the user already exists
 if id "$new_user" &>/dev/null; then
@@ -49,13 +49,15 @@ fi
 sudo adduser "$new_user"
 
 # Prompt for sudo access
-read -p "Grant sudo access to $new_user? (y/n): " sudo_access
+read -p "Grant sudo access to $new_user? (y/n): " sudo_access </dev/tty
 if [[ $sudo_access == "y" ]]; then
     sudo usermod -aG sudo "$new_user"
     echo "$new_user has been added to the sudo group."
 fi
 
 echo "User $new_user created successfully."
+
+break
 
 # Create new user
 #sudo adduser bantler
