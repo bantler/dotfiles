@@ -36,8 +36,10 @@ else
     exit 1
 fi
 
-# Prompt for username
-read -p "Enter new username: " new_user </dev/tty
+# Prompt for username and ensure it's not empty
+while [[ -z "$new_user" ]]; do
+    read -p "Enter new username: " new_user </dev/tty
+done
 
 # Check if the user already exists
 if id "$new_user" &>/dev/null; then
@@ -45,15 +47,18 @@ if id "$new_user" &>/dev/null; then
     exit 1
 fi
 
-# Create the user
+# Create the user (automatically prompts for password)
 sudo adduser "$new_user"
 
 # Prompt for sudo access
-read -p "Grant sudo access to $new_user? (y/n): " sudo_access </dev/tty
-if [[ $sudo_access == "y" ]]; then
-    sudo usermod -aG sudo "$new_user"
-    echo "$new_user has been added to the sudo group."
-fi
+while true; do
+    read -p "Grant sudo access to $new_user? (y/n): " sudo_access </dev/tty
+    case "$sudo_access" in
+        [Yy]* ) sudo usermod -aG sudo "$new_user"; echo "$new_user has been added to the sudo group."; break;;
+        [Nn]* ) echo "Skipping sudo access."; break;;
+        * ) echo "Please answer y or n.";;
+    esac
+done
 
 echo "User $new_user created successfully."
 
