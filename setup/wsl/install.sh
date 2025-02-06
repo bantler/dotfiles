@@ -46,7 +46,6 @@ read -s password </dev/tty
 # Check if the user already exists
 if id "$username" &>/dev/null; then
     echo "User '$username' already exists!"
-    continue
 else
     # Create the user
     sudo useradd -m -s /bin/bash "$username"
