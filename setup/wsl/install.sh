@@ -78,7 +78,7 @@ touch ~/.hushlogin
 echo "Creating SSH Key."
 #sudo -u bantler mkdir -p /home/bantler/.ssh
 #sudo -u bantler chmod 700 /home/bantler/.ssh
-sudo -u $username ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519.pub
+sudo -u "$username" ssh-keygen -t ed25519 -f /home/$username/.ssh/id_ed25519.pub
 
 ssh_pub_key=$(< ~/.ssh/id_ed25519.pub)
 echo "$ssh_pub_key"
