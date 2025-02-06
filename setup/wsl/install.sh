@@ -63,10 +63,12 @@ fi
 
 echo "User $username created successfully."
 
+cd $home
+
 # change user
-echo "Switching user to $username"
-su - bantler
-ls -la
+# echo "Switching user to $username"
+# su - bantler
+# ls -la
 
 # # Set new user as default in wsl
 # echo -e "[user]\ndefault=bantler" | sudo tee -a /etc/wsl.conf > /dev/null
