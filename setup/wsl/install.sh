@@ -71,11 +71,24 @@ echo "Switching user to $username"
 su - bantler
 
 # # touch hushlogin
-echo "Creating hushlogin"
+echo "Creating hushlogin."
 touch ~/.hushlogin
 
 # # Create ssh key
-# sudo ssh-keygen -t ed25519
+echo "Creating SSH Key."
+sudo ssh-keygen -t ed25519
+
+ssh_pub_key=$(< ~/.ssh/id_ed25519.pub)
+echo "$ssh_pub_key"
+
+echo "SSH Key has been generated, now copy to github then Press Y to continue..."
+while true; do
+    read -n 1 key
+    if [[ "$key" == "Y" || "$key" == "y" ]]; then
+        echo -e "\nContinuing..."
+        break
+    fi
+done
 
 # # Instal yadm and clone dotfiles repo
 # sudo apt-get install yadm
