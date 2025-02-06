@@ -36,47 +36,23 @@ else
     exit 1
 fi
 
-# Change root password
-echo "root:$new_password" | chpasswd
-
-# Check if the password change was successful
-if [[ $? -eq 0 ]]; then
-    echo "Root password changed successfully."
-else
-    echo "Failed to change root password."
-    exit 1
-fi
-
 # Create new user
-read -s "Enter new username: " new_user </dev/tty
-sudo adduser "$new_user"
+sudo adduser bantler
 
-# Optionally, add to sudo group
-read -s "Grant sudo access? (y/n): " sudo_access </dev/tty
-if [[ $sudo_access == "y" ]]; then
-    sudo usermod -aG sudo "$new_user"
-    echo "$new_user added to sudo group."
-fi
-
-echo "User $new_user created successfully."
-# # Create new user
-# sudo adduser bantler
-
-# # Grant admin to user and make default
-# sudo usermod -aG sudo bantler
-
+# grant admin to user and make default
+sudo usermod -aG sudo bantler
 echo -e "[user]\ndefault=bantler" | sudo tee -a /etc/wsl.conf > /dev/null
 
-# Change user
+# change user
 su - bantler
 
-# Touch hushlogin 
+# touch hushlogin
 touch ~/.hushlogin
 
 # Create ssh key
 sudo ssh-keygen -t ed25519
 
-# Install yadm and clone dotfiles repo
+# Instal yadm and clone dotfiles repo
 sudo apt-get install yadm
 yadm clone git@github.com:bantler/dotfiles.git
 yadm status
