@@ -69,6 +69,7 @@ echo -e "[user]\ndefault=bantler" | sudo tee -a /etc/wsl.conf > /dev/null
 # change user
 echo "Switching user to $username"
 sudo su - bantler
+ls -la
 
 # # touch hushlogin
 echo "Creating hushlogin."
