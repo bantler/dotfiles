@@ -67,9 +67,11 @@ echo "User $username created successfully."
 echo -e "[user]\ndefault=bantler" | sudo tee -a /etc/wsl.conf > /dev/null
 
 # change user
+echo "Switching user to $username"
 su - bantler
 
 # # touch hushlogin
+echo "Createing hushlogin"
 touch ~/.hushlogin
 
 # # Create ssh key
