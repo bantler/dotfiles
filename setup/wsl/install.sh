@@ -63,35 +63,34 @@ fi
 
 echo "User $username created successfully."
 
-cd $home
-
 # change user
-# echo "Switching user to $username"
-# su - bantler
-# ls -la
+echo "Switching user to $username"
+su - bantler
 
 # # Set new user as default in wsl
 # echo -e "[user]\ndefault=bantler" | sudo tee -a /etc/wsl.conf > /dev/null
 
 # # # touch hushlogin
-# echo "Creating hushlogin."
-# touch ~/.hushlogin
+echo "Creating hushlogin."
+touch ~/.hushlogin
 
 # # # Create ssh key
-# echo "Creating SSH Key."
-# ssh-keygen -t ed25519
+echo "Creating SSH Key."
+sudo -u bantler mkdir -p /home/bantler/.ssh
+sudo -u bantler chmod 700 /home/bantler/.ssh
+sudo -u bantler ssh-keygen -t ed25519 -f /home/bantler/.ssh/ed25519
 
-# ssh_pub_key=$(< ~/.ssh/id_ed25519.pub)
-# echo "$ssh_pub_key"
+ssh_pub_key=$(< /home/bantler/.ssh/id_ed25519.pub)
+echo "$ssh_pub_key"
 
-# echo "SSH Key has been generated, now copy to github then Press Y to continue..."
-# while true; do
-#     read -n 1 key
-#     if [[ "$key" == "Y" || "$key" == "y" ]]; then
-#         echo -e "\nContinuing..."
-#         break
-#     fi
-# done
+echo "SSH Key has been generated, now copy to github then Press Y to continue..."
+while true; do
+    read -n 1 key
+    if [[ "$key" == "Y" || "$key" == "y" ]]; then
+        echo -e "\nContinuing..."
+        break
+    fi
+done
 
 # # Instal yadm and clone dotfiles repo
 # sudo apt-get install yadm
