@@ -36,21 +36,41 @@ else
     exit 1
 fi
 
-# Prompt for username and ensure it's not empty
+# Prompt for a username and ensure it's valid
 while [[ -z "$new_user" ]]; do
     read -p "Enter new username: " new_user </dev/tty
 done
 
-# Check if the user already exists
+# Check if user already exists
 if id "$new_user" &>/dev/null; then
     echo "User '$new_user' already exists!"
     exit 1
 fi
 
-# Create the user (automatically prompts for password)
-sudo adduser "$new_user"
+# Create the user without prompting for additional details
+sudo adduser --gecos "" "$new_user"
 
-# Prompt for sudo access
+# Set password securely
+while true; do
+    read -s -p "Enter a password for $new_user: " user_pass </dev/tty
+    echo
+    read -s -p "Confirm password: " user_pass_confirm </dev/tty
+    echo
+    if [[ "$user_pass" == "$user_pass_confirm" ]]; then
+        echo "$new_user:$user_pass" | sudo chpasswd
+        break
+    else
+        echo "Passwords do not match. Please try again."
+    fi
+done
+
+# Ensure the password change was successful
+if [[ $? -ne 0 ]]; then
+    echo "Error setting password. Exiting."
+    exit 1
+fi
+
+# Ask if the user should have sudo access
 while true; do
     read -p "Grant sudo access to $new_user? (y/n): " sudo_access </dev/tty
     case "$sudo_access" in
