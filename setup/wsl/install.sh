@@ -65,7 +65,7 @@ echo "User $username created successfully."
 
 # change user
 echo "Switching user to $username"
-su - bantler
+su - $username
 
 # # Set new user as default in wsl
 # echo -e "[user]\ndefault=bantler" | sudo tee -a /etc/wsl.conf > /dev/null
@@ -78,7 +78,7 @@ touch ~/.hushlogin
 echo "Creating SSH Key."
 #sudo -u bantler mkdir -p /home/bantler/.ssh
 #sudo -u bantler chmod 700 /home/bantler/.ssh
-sudo -u bantler ssh-keygen -t ed25519 -f /home/$username/.ssh/id_ed25519
+sudo -u $username ssh-keygen -t ed25519 -f /home/$username/.ssh/id_ed25519
 
 ssh_pub_key=$(< /home/$username/.ssh/id_ed25519.pub)
 echo "$ssh_pub_key"
