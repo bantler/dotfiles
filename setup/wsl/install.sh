@@ -73,24 +73,25 @@ touch /home/$username/.hushlogin
 echo "Creating SSH Key."
 sudo -u "$username" ssh-keygen -t ed25519 -f /home/$username/.ssh/id_ed25519
 
+# Pause while ssh key is copied to github
+ssh_pub_key=$(< /home/$username/.ssh/id_ed25519.pub)
+echo "$ssh_pub_key"
+
+echo "SSH Key has been generated, now copy to github then Press Y to continue..."
+while true; do
+    read -n 1 key
+    if [[ "$key" == "Y" || "$key" == "y" ]]; then
+        echo -e "\nContinuing..."
+        break
+    fi
+done
+
 # # change user
 # echo "Switching user to $username"
 # su - $username
 
 # # Set new user as default in wsl
 # echo -e "[user]\ndefault=bantler" | sudo tee -a /etc/wsl.conf > /dev/null
-
-# ssh_pub_key=$(< ~/.ssh/id_ed25519.pub)
-# echo "$ssh_pub_key"
-
-# echo "SSH Key has been generated, now copy to github then Press Y to continue..."
-# while true; do
-#     read -n 1 key
-#     if [[ "$key" == "Y" || "$key" == "y" ]]; then
-#         echo -e "\nContinuing..."
-#         break
-#     fi
-# done
 
 # # Instal yadm and clone dotfiles repo
 # sudo apt-get install yadm
