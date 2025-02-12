@@ -71,7 +71,7 @@ touch /home/$username/.hushlogin
 
 # Create ssh key
 echo "Creating SSH Key."
-sudo -u "$username" ssh-keygen -t ed25519 -f /home/$username/.ssh/id_ed25519.pub
+sudo -u "$username" ssh-keygen -t ed25519 -f /home/$username/.ssh/id_ed25519
 
 # # change user
 # echo "Switching user to $username"
