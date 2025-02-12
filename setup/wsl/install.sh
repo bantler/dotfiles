@@ -79,13 +79,10 @@ echo "$ssh_pub_key"
 
 echo -n "SSH Key has been generated, now copy to github then Press [ENTER] to continue..."
 
-# while true; do
-#     read -n 1 key
-#     if [[ "$key" == "Y" || "$key" == "y" ]]; then
-#         echo -e "\nContinuing..."
-#         break
-#     fi
-# done
+# Instal yadm and clone dotfiles repo
+sudo apt-get install yadm
+HOME=/home/$username/ yadm clone git@github.com:bantler/dotfiles.git
+yadm status
 
 # # change user
 # echo "Switching user to $username"
