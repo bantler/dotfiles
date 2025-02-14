@@ -94,7 +94,7 @@ HOME=/home/$username/ yadm clone git@github.com:bantler/dotfiles.git
 
 # Install starship
 echo "Installing starship"
-curl -sS https://starship.rs/install.sh | sudo bash
+curl -sS https://starship.rs/install.sh | sh
 
 # # Install zsh shell
 echo "Installing zsh shell"
