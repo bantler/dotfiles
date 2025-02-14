@@ -92,30 +92,17 @@ read -n 1 -s -r -p "SSH Key has been generated, now copy to github then Press an
 # Instal yadm and clone dotfiles repo
 sudo apt-get install yadm
 HOME=/home/$username/ yadm clone git@github.com:bantler/dotfiles.git
-yadm status
-
-# # change user
-# echo "Switching user to $username"
-# su - $username
-
-# # Set new user as default in wsl
-# echo -e "[user]\ndefault=bantler" | sudo tee -a /etc/wsl.conf > /dev/null
-
-# # Instal yadm and clone dotfiles repo
-# sudo apt-get install yadm
-# yadm clone git@github.com:bantler/dotfiles.git
-# yadm status
 
 # # Install zsh shell
-# sudo apt-get install zsh
+sudo apt-get install zsh
 
 # # Make zsh the default shell
-# sudo chsh -s /bin/zsh
+sudo chsh -s /bin/zsh
 
 # # Install zsh plugins
-# git clone https://github.com/zsh-users/zsh-autosuggestions ~/.zsh/zsh-autosuggestions
-# git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.zsh/zsh-syntax-highlighting
-# git clone https://github.com/zsh-users/zsh-completions.git ~/.zsh/zsh-completions
+git clone https://github.com/zsh-users/zsh-autosuggestions ~/.zsh/zsh-autosuggestions
+git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.zsh/zsh-syntax-highlighting
+git clone https://github.com/zsh-users/zsh-completions.git ~/.zsh/zsh-completions
 
 # # Update and install dependhancies and remote so
 # sudo apt-get update
@@ -199,3 +186,6 @@ yadm status
 
 # # Install jq
 # sudo apt-get install jq -y
+
+# # Set new user as default in wsl
+# echo -e "[user]\ndefault=bantler" | sudo tee -a /etc/wsl.conf > /dev/null
