@@ -102,9 +102,9 @@ sudo chsh -s /bin/zsh
 
 # # Install zsh plugins
 echo "Installing zsh plugins"
-sudo -u "$username" git clone https://github.com/zsh-users/zsh-autosuggestions ~/.zsh/zsh-autosuggestions
-sudo -u "$username" git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.zsh/zsh-syntax-highlighting
-sudo -u "$username" git clone https://github.com/zsh-users/zsh-completions.git ~/.zsh/zsh-completions
+git clone https://github.com/zsh-users/zsh-autosuggestions /home/$username/.zsh/zsh-autosuggestions
+git clone https://github.com/zsh-users/zsh-syntax-highlighting.git /home/$username/.zsh/zsh-syntax-highlighting
+git clone https://github.com/zsh-users/zsh-completions.git /home/$username/.zsh/zsh-completions
 
 # # Update and install dependhancies and remote so
 # sudo apt-get update
