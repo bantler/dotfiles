@@ -142,7 +142,8 @@ echo "Installing python and venv"
 sudo apt-get install python3
 sudo apt install python3-venv -y
 
-# sudo apt-get install azure-cli
+echo "Installing azure-cli"
+curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
 
 # # Install Terraform and TFEnv
 # sudo apt-get install terraform
