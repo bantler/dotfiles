@@ -96,11 +96,11 @@ if [ -f "$SSH_KEY_PATH" ]; then
 fi
 
 # Ask for email input for SSH key
-read -p "Enter your email for the SSH key: " email
+read -p "Enter your email for the SSH key: " email </dev/tty
 
 # Ask for passphrase input
 echo "Enter a passphrase for your SSH key (or press Enter for none):"
-read -s passphrase
+read -s passphrase </dev/tty
 
 # Generate SSH key with passphrase
 echo "Generating a new SSH key..."
