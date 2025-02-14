@@ -71,7 +71,7 @@ touch /home/$username/.hushlogin
 
 # Create ssh key
 echo "Creating SSH Key."
-sudo -u "$username" ssh-keygen -t ed25519
+ssh-keygen -t ed25519
 
 # Pause while ssh key is copied to github
 ssh_pub_key=$(< /home/$username/.ssh/id_ed25519.pub)
