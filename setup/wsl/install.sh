@@ -110,6 +110,10 @@ git clone https://github.com/zsh-users/zsh-autosuggestions /home/$username/.zsh/
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git /home/$username/.zsh/zsh-syntax-highlighting
 git clone https://github.com/zsh-users/zsh-completions.git /home/$username/.zsh/zsh-completions
 
+# # Install vscode
+echo "Installing vscode"
+sudo apt-get install code
+
 # # Update and install dependhancies and remote so
 # sudo apt-get update
 # sudo apt-get install -y ca-certificates curl lsb-release wget gpg gnupg apt-transport-https software-properties-common apt-transport-https -y
