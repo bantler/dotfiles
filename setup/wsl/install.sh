@@ -69,7 +69,7 @@ touch /home/$username/.hushlogin
 
 # Create ssh key
 echo "Creating SSH Key."
-SSH_KEY_PATH="/home/$username/.ssh/"
+SSH_KEY_PATH="/home/$username/.ssh/ed25519"
 
 # Ask for passphrase input
 echo "Enter a passphrase for your SSH key (or press Enter for none):"
