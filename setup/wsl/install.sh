@@ -85,14 +85,14 @@ ssh-add /home/$username/.ssh/id_ed25519 </dev/tty
 echo "Your new SSH public key:"
 cat /home/$username/.ssh/id_ed25519.pub
 
-# read -n 1 -s -r -p "SSH Key has been generated, now copy to github then Press any key to continue with installation..."
+read -n 1 -s -r -p "SSH Key has been generated, now copy to github then Press any key to continue with installation..." </dev/tty
 # echo "SSH Key has been generated, now copy to github then Press any ENTER to continue with installation..."
 # read
 
-# # Instal yadm and clone dotfiles repo
-# sudo apt-get install yadm
-# HOME=/home/$username/ yadm clone git@github.com:bantler/dotfiles.git
-# yadm status
+# Instal yadm and clone dotfiles repo
+sudo apt-get install yadm
+HOME=/home/$username/ yadm clone git@github.com:bantler/dotfiles.git
+yadm status
 
 # # change user
 # echo "Switching user to $username"
