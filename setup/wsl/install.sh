@@ -63,24 +63,28 @@ fi
 
 echo "User $username created successfully."
 
-home_dir="/home/$username"
-
 # Create hushlogin
 echo "Creating hushlogin."
 touch /home/$username/.hushlogin
 
 # Create ssh key
 echo "Creating SSH Key."
+SSH_KEY_PATH="/home/$username/.ssh/"
 
 # Ask for passphrase input
 echo "Enter a passphrase for your SSH key (or press Enter for none):"
 read -s passphrase </dev/tty
 
-sudo -u "$username" ssh-keygen -t ed25519 -f /home/$username/.ssh/id_ed25519 -N "$passphrase"
+sudo -u "$username" ssh-keygen -t ed25519 -f $SSH_KEY_PATH -N "$passphrase"
 
-# Pause while ssh key is copied to github
-ssh_pub_key=$(< /home/$username/.ssh/id_ed25519.pub)
-echo "$ssh_pub_key"
+# Start SSH agent and add the key
+echo "Adding SSH key to SSH agent..."
+eval "$(ssh-agent -s)"
+ssh-add "$SSH_KEY_PATH"
+
+# Display the public key
+echo "Your new SSH public key:"
+cat "$SSH_KEY_PATH.pub"
 
 # read -n 1 -s -r -p "SSH Key has been generated, now copy to github then Press any key to continue with installation..."
 # echo "SSH Key has been generated, now copy to github then Press any ENTER to continue with installation..."
