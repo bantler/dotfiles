@@ -76,14 +76,15 @@ sudo -u "$username" ssh-keygen -t ed25519
 # Pause while ssh key is copied to github
 ssh_pub_key=$(< /home/$username/.ssh/id_ed25519.pub)
 echo "$ssh_pub_key"
+echo "SSH Key has been generated, now copy to github then run package installer"
 
-echo "SSH Key has been generated, now copy to github then Press any ENTER to continue with installation..."
-read
+# echo "SSH Key has been generated, now copy to github then Press any ENTER to continue with installation..."
+# read
 
-# Instal yadm and clone dotfiles repo
-sudo apt-get install yadm
-HOME=/home/$username/ yadm clone git@github.com:bantler/dotfiles.git
-yadm status
+# # Instal yadm and clone dotfiles repo
+# sudo apt-get install yadm
+# HOME=/home/$username/ yadm clone git@github.com:bantler/dotfiles.git
+# yadm status
 
 # # change user
 # echo "Switching user to $username"
