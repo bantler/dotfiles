@@ -92,6 +92,10 @@ echo "Installing yadm"
 sudo apt-get install yadm
 HOME=/home/$username/ yadm clone git@github.com:bantler/dotfiles.git
 
+# Install starship
+echo "Installing starship"
+curl -sS https://starship.rs/install.sh | sudo bash
+
 # # Install zsh shell
 echo "Installing zsh shell"
 sudo apt-get install zsh
@@ -144,10 +148,6 @@ git clone https://github.com/zsh-users/zsh-completions.git /home/$username/.zsh/
 # sudo tee /etc/apt/sources.list.d/hashicorp.list
 
 # sudo apt-get update
-
-# Install starship
-echo "Installing starship"
-curl -sS https://starship.rs/install.sh | bash
 
 # # Install vscode
 # sudo apt-get install code
