@@ -79,7 +79,7 @@ sudo -u "$username" ssh-keygen -t ed25519 -f /home/$username/.ssh/id_ed25519 -N 
 # Start SSH agent and add the key
 echo "Adding SSH key to SSH agent..."
 eval "$(ssh-agent -s)"
-ssh-add /home/$username/.ssh/id_ed25519
+ssh-add /home/$username/.ssh/id_ed25519 </dev/tty
 
 # Display the public key
 echo "Your new SSH public key:"
