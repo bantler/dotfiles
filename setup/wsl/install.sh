@@ -78,8 +78,7 @@ ssh_pub_key=$(< /home/$username/.ssh/id_ed25519.pub)
 echo "$ssh_pub_key"
 
 #read -n 1 -s -r -p "SSH Key has been generated, now copy to github then Press any key to continue with installation..."
-read -t 5 -n 1 -s -r -p "Wait 5 seconds or press any key to continue immediately" 
-
+Pause -p "SSH Key has been generated, now copy to github then Press any key to continue with installation..."
 
 # Instal yadm and clone dotfiles repo
 sudo apt-get install yadm
