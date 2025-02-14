@@ -147,7 +147,7 @@ git clone https://github.com/zsh-users/zsh-completions.git /home/$username/.zsh/
 
 # Install starship
 echo "Installing starship"
-curl -sS https://starship.rs/install.sh | shell
+curl -sS https://starship.rs/install.sh | bash
 
 # # Install vscode
 # sudo apt-get install code
