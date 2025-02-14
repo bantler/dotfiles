@@ -69,22 +69,21 @@ touch /home/$username/.hushlogin
 
 # Create ssh key
 echo "Creating SSH Key."
-SSH_KEY_PATH="/home/$username/.ssh/ed25519"
 
 # Ask for passphrase input
 echo "Enter a passphrase for your SSH key (or press Enter for none):"
 read -s passphrase </dev/tty
 
-sudo -u "$username" ssh-keygen -t ed25519 -f $SSH_KEY_PATH -N "$passphrase"
+sudo -u "$username" ssh-keygen -t ed25519 -f /home/$username/.ssh/id_ed25519 -N "$passphrase"
 
 # Start SSH agent and add the key
 echo "Adding SSH key to SSH agent..."
 eval "$(ssh-agent -s)"
-ssh-add "$SSH_KEY_PATH"
+ssh-add /home/$username/.ssh/id_ed25519
 
 # Display the public key
 echo "Your new SSH public key:"
-cat "$SSH_KEY_PATH.pub"
+cat /home/$username/.ssh/id_ed25519.pub
 
 # read -n 1 -s -r -p "SSH Key has been generated, now copy to github then Press any key to continue with installation..."
 # echo "SSH Key has been generated, now copy to github then Press any ENTER to continue with installation..."
