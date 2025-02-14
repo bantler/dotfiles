@@ -2,12 +2,6 @@
 
 # To install this script run "curl -sS https://raw.githubusercontent.com/bantler/dotfiles/refs/heads/main/setup/wsl/install.sh | sudo bash"
 
-# Function to pause for user confirmation
-pause() {
-    read -n 1 -s -r -p "Press any key to continue..."
-    echo
-}
-
 # Update and upgrade
 sudo apt-get update
 sudo apt-get upgrade -y
@@ -78,43 +72,17 @@ touch /home/$username/.hushlogin
 # Create ssh key
 echo "Creating SSH Key."
 
-# Check for existing SSH keys
-echo "Checking for existing SSH keys..."
-SSH_KEY_PATH="/home/$username/.ssh/id_ed25519"
-
-if [ -f "$SSH_KEY_PATH" ]; then
-    echo "An SSH key already exists at $SSH_KEY_PATH."
-    read -p "Do you want to overwrite it? (y/N): " overwrite
-    if [[ "$overwrite" =~ ^[Yy]$ ]]; then
-        rm -f "$SSH_KEY_PATH" "$SSH_KEY_PATH.pub"
-        echo "Old SSH key removed."
-    else
-        echo "Keeping existing key."
-        pause
-        exit 0
-    fi
-fi
-
-# Ask for email input for SSH key
-read -p "Enter your email for the SSH key: " email </dev/tty
-
 # Ask for passphrase input
 echo "Enter a passphrase for your SSH key (or press Enter for none):"
 read -s passphrase </dev/tty
 
-# Generate SSH key with passphrase
-echo "Generating a new SSH key..."
-ssh-keygen -t ed25519 -C "$email" -f "$SSH_KEY_PATH" -N "$passphrase"
+sudo -u "$username" ssh-keygen -t ed25519 -f /home/$username/.ssh/id_ed25519 -N "$passphrase"
 
-# Start SSH agent and add the key
-echo "Adding SSH key to SSH agent..."
-eval "$(ssh-agent -s)"
-ssh-add "$SSH_KEY_PATH"
+# Pause while ssh key is copied to github
+ssh_pub_key=$(< /home/$username/.ssh/id_ed25519.pub)
+echo "$ssh_pub_key"
 
-# Display the public key
-echo "Your new SSH public key:"
-cat "$SSH_KEY_PATH.pub"
-
+# read -n 1 -s -r -p "SSH Key has been generated, now copy to github then Press any key to continue with installation..."
 # echo "SSH Key has been generated, now copy to github then Press any ENTER to continue with installation..."
 # read
 
