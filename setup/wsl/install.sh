@@ -110,9 +110,14 @@ git clone https://github.com/zsh-users/zsh-autosuggestions /home/$username/.zsh/
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git /home/$username/.zsh/zsh-syntax-highlighting
 git clone https://github.com/zsh-users/zsh-completions.git /home/$username/.zsh/zsh-completions
 
-# # Install vscode
-echo "Installing vscode"
-sudo apt-get install code
+# Install powershell
+echo "Installing powershell"
+sudo apt-get install powershell -y
+
+# Install Python and venv
+echo "Installing python and venv"
+sudo apt-get install python3
+sudo apt install python3-venv -y
 
 # # Update and install dependhancies and remote so
 # sudo apt-get update
@@ -152,16 +157,6 @@ sudo apt-get install code
 # sudo tee /etc/apt/sources.list.d/hashicorp.list
 
 # sudo apt-get update
-
-# # Install vscode
-# sudo apt-get install code
-
-# # Install powershell
-# sudo apt-get install powershell -y
-
-# # Install Python and venv
-# sudo apt-get install python3
-# sudo apt install python3-venv -y
 
 # sudo apt-get install azure-cli
 
