@@ -109,15 +109,6 @@ properties:
       id: 9N0866FS04W8
     - resource: Microsoft.WinGet.DSC/WinGetPackage
       directives:
-        description: Installing Microsoft Copilot
-        allowPrerelease: true
-        securityContext: current
-      settings:
-        id: "9NHT9RB2F4HD"
-        source: msstore
-      id: 9NHT9RB2F4HD
-    - resource: Microsoft.WinGet.DSC/WinGetPackage
-      directives:
         description: Installing Microsoft Teams
         allowPrerelease: true
         securityContext: current
@@ -127,15 +118,6 @@ properties:
       id: XP8BT8DW290MPQ
     - resource: Microsoft.WinGet.DSC/WinGetPackage
       directives:
-        description: Installing Microsoft 365
-        allowPrerelease: true
-        securityContext: current
-      settings:
-        id: "9WZDNCRD29V9"
-        source: msstore
-      id: 9WZDNCRD29V9
-    - resource: Microsoft.WinGet.DSC/WinGetPackage
-      directives:
         description: Installing Microsoft To-Do
         allowPrerelease: true
         securityContext: current
@@ -143,15 +125,6 @@ properties:
         id: "9NBLGGH5R558"
         source: msstore
       id: 9NBLGGH5R558
-    - resource: Microsoft.WinGet.DSC/WinGetPackage
-      directives:
-        description: Installing Microsoft Defender
-        allowPrerelease: true
-        securityContext: current
-      settings:
-        id: "9P6PMZTM93LR"
-        source: msstore
-      id: 9P6PMZTM93LR
     - resource: Microsoft.WinGet.DSC/WinGetPackage
       directives:
         description: Installing Microsoft Whiteboard
@@ -361,15 +334,6 @@ properties:
       id: 9WZDNCRFJ14K
     - resource: Microsoft.WinGet.DSC/WinGetPackage
       directives:
-        description: Installing Amazon.AWSCLI
-        allowPrerelease: true
-        securityContext: current
-      settings:
-        id: "Amazon.AWSCLI"
-        source: winget
-      id: Amazon.AWSCLI
-    - resource: Microsoft.WinGet.DSC/WinGetPackage
-      directives:
         description: Installing Valve.Steam
         allowPrerelease: true
         securityContext: current
@@ -404,49 +368,24 @@ properties:
         id: "Fastfetch-cli.Fastfetch"
         source: winget
       id: Fastfetch-cli.Fastfetch
-    - resource: GitDsc/GitClone
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
       directives:
-        description: 'Cloning: dotfiles'
+        description: Installing Docker.DockerDesktop
         allowPrerelease: true
         securityContext: current
       settings:
-        httpsUrl: https://github.com/bantler/dotfiles.git
-        rootDirectory: F:\Repos\Github\dotfiles
-      id: 'Clone dotfiles: F:\Repos\Github\dotfiles'
-      dependsOn:
-      - Git.Git
-    - resource: GitDsc/GitClone
+        id: "Docker.DockerDesktop"
+        source: winget
+      id: Docker.DockerDesktop
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
       directives:
-        description: 'Cloning: ms-learn'
+        description: Installing Obsidian.Obsidian
         allowPrerelease: true
         securityContext: current
       settings:
-        httpsUrl: https://github.com/bantler/ms-learn.git
-        rootDirectory: F:\Repos\Github\ms-learn
-      id: 'Clone dotfiles: F:\Repos\Github\ms-learn'
-      dependsOn:
-      - Git.Git
-    - resource: GitDsc/GitClone
-      directives:
-        description: 'Cloning: cloudguru'
-        allowPrerelease: true
-        securityContext: current
-      settings:
-        httpsUrl: https://github.com/bantler/cloudguru.git
-        rootDirectory: F:\Repos\Github\cloudguru
-      id: 'Clone dotfiles: F:\Repos\Github\cloudguru'
-      dependsOn:
-      - Git.Git
-    - resource: GitDsc/GitClone
-      directives:
-        description: 'Cloning: boilerplates'
-        allowPrerelease: true
-        securityContext: current
-      settings:
-        httpsUrl: https://github.com/bantler/boilerplates.git
-        rootDirectory: F:\Repos\Github\boilerplates
-      id: 'Clone dotfiles: F:\Repos\Github\boilerplates'
-      dependsOn:
-      - Git.Git    
+        id: "Obsidian.Obsidian"
+        source: winget
+      id: Obsidian.Obsidian
+  configurationVersion: 0.2.0
   configurationVersion: 0.2.0
 
