@@ -1,6 +1,3 @@
-# Set Execution policy
-Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
-
 # Install NerdFonts Module
 Install-PSResource -Name NerdFonts
 Import-Module -Name NerdFonts
