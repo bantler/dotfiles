@@ -1,32 +1,37 @@
 # Enable WSL
+Write-Host "Installing WSL"
 wsl --install
-Write-Host "WSL installed"
 
 # Install Linux distro
+Write-Host "Installing Ubuntu 24.04"
 wsl --install -d Ubuntu-24.04
-Write-Host "Ubuntu 24.04 installed"
 
 # Download Winget configuration file
+Write-Host "Downloading Winget configuration file"
 Invoke-WebRequest -Uri https://raw.githubusercontent.com/bantler/dotfiles/refs/heads/main/setup/win/configuration.dsc.win11.yaml -OutFile C:\configuration.dsc.win11.yaml
-Write-Host "Winget configuration file downloaded"
 
 # Enable Winget configure
+Write-Host "Enabling Winget configure"
 winget configure --Enable
-Write-Host "Winget configure enabled"
 
 # Apply Winget configuration
+Write-Host "Applying winget configuration"
 winget configure -f "C:\configuration.dsc.win11.yaml"
-Write-Host "Apply winget configuration"
 
 # Install NerdFonts Module
+Write-Host "Installing Nerd Fonts"
 Install-PSResource -Name NerdFonts
 Import-Module -Name NerdFonts
-Write-Host "Nerd Fonts installed"
 
 #FireCode
+Write-Host "Installing FireCode font"
 Install-NerdFont -Name 'FiraCode' -Scope CurrentUser
-Write-Host "FireCode font installed"
 
 # Hack Nerd Font
+Write-Host "Installing Hack font"
 Install-NerdFont -Name 'Hack' -Scope CurrentUser
-Write-Host "Hack font installed"
+
+# Config Git
+Write-Host "Configuring Git"
+git config --global user.email "matt.j.collin@gmail.com"
+git config --global user.name "Matt Collin"
