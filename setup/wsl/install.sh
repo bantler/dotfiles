@@ -29,66 +29,9 @@ sudo apt-get update
 
 ###################################
 
-# Check if the script is run as root
-if [[ $EUID -ne 0 ]]; then
-   echo "This script must be run as root. Try using sudo."
-   exit 1
-fi
-
-# Prompt user for new root password securely
-echo "Enter new root password:"
-read -s new_password </dev/tty
-
-echo "Confirm new root password:"
-read -s confirm_password </dev/tty
-
-# Check if passwords match
-if [[ "$new_password" != "$confirm_password" ]]; then
-    echo "Error: Passwords do not match."
-    exit 1
-fi
-
-# Change root password
-echo "root:$new_password" | chpasswd
-
-# Check if the password change was successful
-if [[ $? -eq 0 ]]; then
-    echo "Root password changed successfully."
-else
-    echo "Failed to change root password."
-    exit 1
-fi
-
-# Prompt for username
-echo "Enter new username"
-read -s username </dev/tty
-
-echo "Enter password for $username: "
-read -s password </dev/tty
-
-# Check if the user already exists
-if id "$username" &>/dev/null; then
-    echo "User '$username' already exists!"
-fi
-
-# Create the user
-sudo useradd -m -s /bin/bash "$username"
-
-# Change user password
-echo "$username:$password" | sudo chpasswd
-
-# Prompt for sudo access
-read -p "Grant sudo access to $username? (y/n): " sudo_access </dev/tty
-if [[ $sudo_access == "y" ]]; then
-    sudo usermod -aG sudo "$username"
-    echo "$username has been added to the sudo group."
-fi
-
-echo "User $username created successfully."
-
 # Create hushlogin
 echo "Creating hushlogin."
-touch /home/$username/.hushlogin
+touch .hushlogin
 
 # Create ssh key
 echo "Creating SSH Key."
@@ -97,23 +40,23 @@ echo "Creating SSH Key."
 echo "Enter a passphrase for your SSH key (or press Enter for none):"
 read -s passphrase </dev/tty
 
-sudo -u "$username" ssh-keygen -t ed25519 -f /home/$username/.ssh/id_ed25519 -N "$passphrase"
+sudo -u "$username" ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519 -N "$passphrase"
 
 # Start SSH agent and add the key
 echo "Adding SSH key to SSH agent..."
 eval "$(ssh-agent -s)"
-ssh-add /home/$username/.ssh/id_ed25519 </dev/tty
+ssh-add ~/.ssh/id_ed25519 </dev/tty
 
 # Display the public key
 echo "Your new SSH public key:"
-cat /home/$username/.ssh/id_ed25519.pub
+cat $HOME/.ssh/id_ed25519.pub
 
 read -n 1 -s -r -p "SSH Key has been generated, now copy to github then Press any key to continue with installation..." </dev/tty
 
 # Instal yadm and clone dotfiles repo
 echo "Installing yadm"
 sudo apt-get install yadm
-HOME=/home/$username/ yadm clone git@github.com:bantler/dotfiles.git
+yadm clone git@github.com:bantler/dotfiles.git
 
 # Install starship
 echo "Installing starship"
@@ -129,9 +72,9 @@ sudo chsh -s /bin/zsh
 
 # # Install zsh plugins
 echo "Installing zsh plugins"
-git clone https://github.com/zsh-users/zsh-autosuggestions /home/$username/.zsh/zsh-autosuggestions
-git clone https://github.com/zsh-users/zsh-syntax-highlighting.git /home/$username/.zsh/zsh-syntax-highlighting
-git clone https://github.com/zsh-users/zsh-completions.git /home/$username/.zsh/zsh-completions
+git clone https://github.com/zsh-users/zsh-autosuggestions ~/.zsh/zsh-autosuggestions
+git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.zsh/zsh-syntax-highlighting
+git clone https://github.com/zsh-users/zsh-completions.git ~/.zsh/zsh-completions
 
 # Install powershell
 echo "Installing powershell"
@@ -145,34 +88,39 @@ sudo apt install python3-venv -y
 echo "Installing azure-cli"
 curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
 
-# # Install Terraform and TFEnv
-# sudo apt-get install terraform
-# terraform -install-autocomplete
+# Install Terraform and TFEnv
+echo "Installing Terraform and tfenv"
+sudo apt-get install terraform
+terraform -install-autocomplete
 
-# git clone https://github.com/tfutils/tfenv.git ~/.tfenv
-# echo 'export PATH="$HOME/.tfenv/bin:$PATH"' >> ~/.zprofile
-# sudo ln -s ~/.tfenv/bin/* /usr/local/bin
+git clone https://github.com/tfutils/tfenv.git ~/.tfenv
+echo 'export PATH="$HOME/.tfenv/bin:$PATH"' >> ~/.zprofile
+sudo ln -s ~/.tfenv/bin/* /usr/local/bin
 
-# # Install cmatrix
-# sudo apt-get install cmatrix -y
+# Install cmatrix
+echo "Installing cmatrix"
+sudo apt-get install cmatrix -y
 
-# # Install bat
-# sudo apt-get install bat -y
+# Install bat
+echo "Installing bat"
+sudo apt-get install bat -y
 
-# # Install fzf
-# sudo apt-get install fzf
+# Install fzf
+echo "Installing fzf"
+sudo apt-get install fzf
 
-# # Install zoxide
-#  sudo apt install zoxide
+# Install zoxide
+echo "Installing zoxide"
+sudo apt install zoxide
 
-#  # Install eza
-# sudo apt install eza -y
+# Install eza
+echo "Installing eza"
+sudo apt install eza -y
 
-# # Install direnv
-# sudo apt-get install direnv
+# Install direnv
+echo "Installing direnv"
+sudo apt-get install direnv
 
-# # Install jq
-# sudo apt-get install jq -y
-
-# # Set new user as default in wsl
-# echo -e "[user]\ndefault=bantler" | sudo tee -a /etc/wsl.conf > /dev/null
+# Install jq
+echo "Installing jq"
+sudo apt-get install jq -y

@@ -387,5 +387,4 @@ properties:
         source: winget
       id: Obsidian.Obsidian
   configurationVersion: 0.2.0
-  configurationVersion: 0.2.0
 
