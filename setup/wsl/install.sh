@@ -150,9 +150,9 @@ echo "Installing Terraform and tfenv"
 sudo apt-get install terraform
 terraform -install-autocomplete
 
-# git clone https://github.com/tfutils/tfenv.git ~/.tfenv
-# echo 'export PATH="$HOME/.tfenv/bin:$PATH"' >> ~/.zprofile
-# sudo ln -s ~/.tfenv/bin/* /usr/local/bin
+git clone https://github.com/tfutils/tfenv.git ~/.tfenv
+echo 'export PATH="$HOME/.tfenv/bin:$PATH"' >> ~/.zprofile
+sudo ln -s ~/.tfenv/bin/* /usr/local/bin
 
 # # Install cmatrix
 # sudo apt-get install cmatrix -y
