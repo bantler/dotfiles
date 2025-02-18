@@ -10,7 +10,7 @@ sudo apt-get update
 sudo apt-get upgrade -y
 
 # Install pre-requisite packages.
-sudo apt-get install -y wget apt-transport-https software-properties-common
+sudo apt-get install -y wget apt-transport-https software-properties-common gnupg software-properties-common
 
 # Get the version of Ubuntu
 source /etc/os-release
@@ -24,7 +24,22 @@ sudo dpkg -i packages-microsoft-prod.deb
 # Delete the Microsoft repository keys file
 rm packages-microsoft-prod.deb
 
-# Update the list of packages after we added packages.microsoft.com
+# Install the HashiCorp GPG key
+wget -O- https://apt.releases.hashicorp.com/gpg | \
+gpg --dearmor | \
+sudo tee /usr/share/keyrings/hashicorp-archive-keyring.gpg > /dev/null
+
+# Verify the key's fingerprint
+gpg --no-default-keyring \
+--keyring /usr/share/keyrings/hashicorp-archive-keyring.gpg \
+--fingerprint
+
+# Add offical hasicorp repositories
+echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] \
+https://apt.releases.hashicorp.com $(lsb_release -cs) main" | \
+sudo tee /etc/apt/sources.list.d/hashicorp.list
+
+# Update all packages
 sudo apt-get update
 
 ###################################
@@ -113,7 +128,7 @@ read -n 1 -s -r -p "SSH Key has been generated, now copy to github then Press an
 # Instal yadm and clone dotfiles repo
 echo "Installing yadm"
 sudo apt-get install yadm
-HOME=/home/$username/ yadm clone git@github.com:bantler/dotfiles.git
+HOME=/home/$username/ yadm clone git@github.com:bantler/dotfiles.git -f
 
 # Install starship
 echo "Installing starship"
