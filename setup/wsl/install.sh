@@ -40,12 +40,12 @@ echo "Creating SSH Key."
 echo "Enter a passphrase for your SSH key (or press Enter for none):"
 read -s passphrase </dev/tty
 
-sudo -u "$username" ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519 -N "$passphrase"
+sudo -u "$username" ssh-keygen -t ed25519 -f $HOME/.ssh/id_ed25519 -N "$passphrase"
 
 # Start SSH agent and add the key
 echo "Adding SSH key to SSH agent..."
 eval "$(ssh-agent -s)"
-ssh-add ~/.ssh/id_ed25519 </dev/tty
+ssh-add $HOME/.ssh/id_ed25519 </dev/tty
 
 # Display the public key
 echo "Your new SSH public key:"
