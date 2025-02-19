@@ -134,20 +134,6 @@ HOME=/home/$username/ yadm clone git@github.com:bantler/dotfiles.git -f
 echo "Installing starship"
 curl -sS https://starship.rs/install.sh | sh
 
-# # Install zsh shell
-echo "Installing zsh shell"
-sudo apt-get install zsh
-
-# # Make zsh the default shell
-echo "Changing shell to zsh"
-chsh -s $(which zsh)
-
-# # Install zsh plugins
-echo "Installing zsh plugins"
-git clone https://github.com/zsh-users/zsh-autosuggestions /home/$username/.zsh/zsh-autosuggestions
-git clone https://github.com/zsh-users/zsh-syntax-highlighting.git /home/$username/.zsh/zsh-syntax-highlighting
-git clone https://github.com/zsh-users/zsh-completions.git /home/$username/.zsh/zsh-completions
-
 # Install powershell
 echo "Installing powershell"
 sudo apt-get install powershell -y
@@ -194,3 +180,17 @@ sudo apt-get install direnv
 # Install jq
 echo "Installing jq"
 sudo apt-get install jq -y
+
+# # Install zsh shell
+echo "Installing zsh shell"
+sudo apt-get install zsh
+
+# # Install zsh plugins
+echo "Installing zsh plugins"
+git clone https://github.com/zsh-users/zsh-autosuggestions /home/$username/.zsh/zsh-autosuggestions
+git clone https://github.com/zsh-users/zsh-syntax-highlighting.git /home/$username/.zsh/zsh-syntax-highlighting
+git clone https://github.com/zsh-users/zsh-completions.git /home/$username/.zsh/zsh-completions
+
+# # Make zsh the default shell
+echo "Changing shell to zsh"
+chsh -s $(which zsh)
