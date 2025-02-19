@@ -166,9 +166,7 @@ sudo apt-get install terraform
 terraform -install-autocomplete
 
 echo "Cloning tfenv"
-git clone https://github.com/tfutils/tfenv.git /home/$username/.tfenv
-echo 'export PATH="/home/'$username'/.tfenv/bin:$PATH"' >> /home/$username/.zprofile
-sudo ln -s /home/$username/.tfenv/bin/* /usr/local/bin -f
+git clone --depth=1 https://github.com/tfutils/tfenv.git /home/$username/.tfenv
 
 # # Install cmatrix
 # sudo apt-get install cmatrix -y
