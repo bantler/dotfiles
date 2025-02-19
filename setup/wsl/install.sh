@@ -163,31 +163,34 @@ curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
 # Install Terraform and tfenv
 echo "Installing Terraform and tfenv"
 sudo apt-get install terraform
-terraform -install-autocomplete
 
 echo "Cloning tfenv"
-git clone --depth=1 https://github.com/tfutils/tfenv.git /home/$username/.tfenv
+sudo git clone --depth=1 https://github.com/tfutils/tfenv.git /home/$username/.tfenv
 
-# # Install cmatrix
-# sudo apt-get install cmatrix -y
+# Install cmatrix
+echo "Installing cmatrix"
+sudo apt-get install cmatrix -y
 
-# # Install bat
-# sudo apt-get install bat -y
+# Install bat
+echo "Installing bat"
+sudo apt-get install bat -y
 
-# # Install fzf
-# sudo apt-get install fzf
+# Install fzf
+echo "Installing fzf"
+sudo apt-get install fzf
 
-# # Install zoxide
-#  sudo apt install zoxide
+# Install zoxide
+echo "Installing zoxide"
+sudo apt install zoxide
 
-#  # Install eza
-# sudo apt install eza -y
+# Install eza
+echo "Installing eza"
+sudo apt install eza -y
 
-# # Install direnv
-# sudo apt-get install direnv
+# Install direnv
+echo "Installing direnv"
+sudo apt-get install direnv
 
-# # Install jq
-# sudo apt-get install jq -y
-
-# # Set new user as default in wsl
-# echo -e "[user]\ndefault=bantler" | sudo tee -a /etc/wsl.conf > /dev/null
+# Install jq
+echo "Installing jq"
+sudo apt-get install jq -y
