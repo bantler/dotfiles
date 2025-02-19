@@ -140,7 +140,7 @@ sudo apt-get install zsh
 
 # # Make zsh the default shell
 echo "Changing shell to zsh"
-sudo chsh -s /bin/zsh
+chsh -s $(which zsh)
 
 # # Install zsh plugins
 echo "Installing zsh plugins"
