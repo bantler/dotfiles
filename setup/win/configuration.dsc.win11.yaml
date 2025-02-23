@@ -386,5 +386,14 @@ properties:
         id: "Obsidian.Obsidian"
         source: winget
       id: Obsidian.Obsidian
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Installing FilesCommunity.Files
+        allowPrerelease: true
+        securityContext: current
+      settings:
+        id: "FilesCommunity.Files"
+        source: winget
+      id: FilesCommunity.Files
   configurationVersion: 0.2.0
 
