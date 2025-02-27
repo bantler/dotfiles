@@ -386,5 +386,14 @@ properties:
         id: "Obsidian.Obsidian"
         source: winget
       id: Obsidian.Obsidian
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Installing Warp.Warp
+        allowPrerelease: true
+        securityContext: current
+      settings:
+        id: "Warp.Warp"
+        source: winget
+      id: Warp.Warp
   configurationVersion: 0.2.0
 
