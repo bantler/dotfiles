@@ -2,48 +2,6 @@
 
 # To install this script run "curl -sS https://raw.githubusercontent.com/bantler/dotfiles/refs/heads/main/setup/wsl/install.sh | sudo bash"
 
-###################################
-# Prerequisites
-
-# Update the list of packages
-sudo apt-get update
-sudo apt-get upgrade -y
-
-# Install pre-requisite packages.
-sudo apt-get install -y wget apt-transport-https software-properties-common gnupg software-properties-common
-
-# Get the version of Ubuntu
-source /etc/os-release
-
-# Download the Microsoft repository keys
-wget -q https://packages.microsoft.com/config/ubuntu/$VERSION_ID/packages-microsoft-prod.deb
-
-# Register the Microsoft repository keys
-sudo dpkg -i packages-microsoft-prod.deb
-
-# Delete the Microsoft repository keys file
-rm packages-microsoft-prod.deb
-
-# Install the HashiCorp GPG key
-wget -O- https://apt.releases.hashicorp.com/gpg | \
-gpg --dearmor | \
-sudo tee /usr/share/keyrings/hashicorp-archive-keyring.gpg > /dev/null
-
-# Verify the key's fingerprint
-gpg --no-default-keyring \
---keyring /usr/share/keyrings/hashicorp-archive-keyring.gpg \
---fingerprint
-
-# Add offical hasicorp repositories
-echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] \
-https://apt.releases.hashicorp.com $(lsb_release -cs) main" | \
-sudo tee /etc/apt/sources.list.d/hashicorp.list
-
-# Update all packages
-sudo apt-get update
-
-###################################
-
 # Check if the script is run as root
 if [[ $EUID -ne 0 ]]; then
    echo "This script must be run as root. Try using sudo."
@@ -100,103 +58,146 @@ if [[ $sudo_access == "y" ]]; then
 fi
 
 echo "User $username created successfully."
+echo "$USER"
 
-# Create hushlogin
-echo "Creating hushlogin."
-touch /home/$username/.hushlogin
+# # Update the list of packages
+# sudo apt-get update
+# sudo apt-get upgrade -y
 
-# # Create ssh key
-# echo "Creating SSH Key."
+# # Install pre-requisite packages.
+# sudo apt-get install -y wget apt-transport-https software-properties-common gnupg software-properties-common
 
-# # Ask for passphrase input
-# echo "Enter a passphrase for your SSH key (or press Enter for none):"
-# read -s passphrase </dev/tty
+# # Get the version of Ubuntu
+# source /etc/os-release
 
-# sudo -u "$username" ssh-keygen -t ed25519 -f /home/$username/.ssh/id_ed25519 -N "$passphrase"
+# # Download the Microsoft repository keys
+# wget -q https://packages.microsoft.com/config/ubuntu/$VERSION_ID/packages-microsoft-prod.deb
 
-# # Start SSH agent and add the key
-# echo "Adding SSH key to SSH agent..."
-# eval "$(ssh-agent -s)"
-# ssh-add /home/$username/.ssh/id_ed25519 </dev/tty
+# # Register the Microsoft repository keys
+# sudo dpkg -i packages-microsoft-prod.deb
 
-# # Display the public key
-# echo "Your new SSH public key:"
-# cat /home/$username/.ssh/id_ed25519.pub
+# # Delete the Microsoft repository keys file
+# rm packages-microsoft-prod.deb
 
-# read -n 1 -s -r -p "SSH Key has been generated, now copy to github then Press any key to continue with installation..." </dev/tty
+# # Install the HashiCorp GPG key
+# wget -O- https://apt.releases.hashicorp.com/gpg | \
+# gpg --dearmor | \
+# sudo tee /usr/share/keyrings/hashicorp-archive-keyring.gpg > /dev/null
 
-echo "Copy ssh key from windows"
-cp -r /mnt/c/Users/$username/.ssh /home/$username/.ssh
+# # Verify the key's fingerprint
+# gpg --no-default-keyring \
+# --keyring /usr/share/keyrings/hashicorp-archive-keyring.gpg \
+# --fingerprint
 
-echo "Install keychain"
-sudo apt-get install keychain
+# # Add offical hasicorp repositories
+# echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] \
+# https://apt.releases.hashicorp.com $(lsb_release -cs) main" | \
+# sudo tee /etc/apt/sources.list.d/hashicorp.list
 
-# Instal yadm and clone dotfiles repo
-echo "Installing yadm"
-sudo apt-get install yadm
-HOME=/home/$username/ yadm clone git@github.com:bantler/dotfiles.git -f
+# # Update all packages
+# sudo apt-get update
 
-# Install starship
-echo "Installing starship"
-curl -sS https://starship.rs/install.sh | sh
 
-# Install powershell
-echo "Installing powershell"
-sudo apt-get install powershell -y
 
-# Install Python and venv
-echo "Installing python and venv"
-sudo apt-get install python3
-sudo apt install python3-venv -y
+# # Create hushlogin
+# echo "Creating hushlogin."
+# touch /home/$username/.hushlogin
 
-echo "Installing azure-cli"
-curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+# # # Create ssh key
+# # echo "Creating SSH Key."
 
-# Install Terraform and tfenv
-echo "Installing Terraform and tfenv"
-sudo apt-get install terraform
+# # # Ask for passphrase input
+# # echo "Enter a passphrase for your SSH key (or press Enter for none):"
+# # read -s passphrase </dev/tty
 
-echo "Cloning tfenv"
-sudo git clone --depth=1 https://github.com/tfutils/tfenv.git /home/$username/.tfenv
+# # sudo -u "$username" ssh-keygen -t ed25519 -f /home/$username/.ssh/id_ed25519 -N "$passphrase"
 
-# Install cmatrix
-echo "Installing cmatrix"
-sudo apt-get install cmatrix -y
+# # # Start SSH agent and add the key
+# # echo "Adding SSH key to SSH agent..."
+# # eval "$(ssh-agent -s)"
+# # ssh-add /home/$username/.ssh/id_ed25519 </dev/tty
 
-# Install bat
-echo "Installing bat"
-sudo apt-get install bat -y
+# # # Display the public key
+# # echo "Your new SSH public key:"
+# # cat /home/$username/.ssh/id_ed25519.pub
 
-# Install fzf
-echo "Installing fzf"
-sudo apt-get install fzf
+# # read -n 1 -s -r -p "SSH Key has been generated, now copy to github then Press any key to continue with installation..." </dev/tty
 
-# Install zoxide
-echo "Installing zoxide"
-sudo apt install zoxide
+# echo "Copy ssh key from windows"
+# cp -r /mnt/c/Users/$username/.ssh /home/$username/.ssh
 
-# Install eza
-echo "Installing eza"
-sudo apt install eza -y
+# echo "Grant permissions 
+# chmod 600 ~/.ssh/*
 
-# Install direnv
-echo "Installing direnv"
-sudo apt-get install direnv
+# echo "Install keychain"
+# sudo apt-get install keychain
 
-# Install jq
-echo "Installing jq"
-sudo apt-get install jq -y
+# # Instal yadm and clone dotfiles repo
+# echo "Installing yadm"
+# sudo apt-get install yadm
+# HOME=/home/$username/ yadm clone git@github.com:bantler/dotfiles.git -f
 
-# # Install zsh shell
-echo "Installing zsh shell"
-sudo apt-get install zsh
+# # Install starship
+# echo "Installing starship"
+# curl -sS https://starship.rs/install.sh | sh
 
-# # Install zsh plugins
-echo "Installing zsh plugins"
-git clone https://github.com/zsh-users/zsh-autosuggestions /home/$username/.zsh/zsh-autosuggestions
-git clone https://github.com/zsh-users/zsh-syntax-highlighting.git /home/$username/.zsh/zsh-syntax-highlighting
-git clone https://github.com/zsh-users/zsh-completions.git /home/$username/.zsh/zsh-completions
+# # Install powershell
+# echo "Installing powershell"
+# sudo apt-get install powershell -y
 
-# # Make zsh the default shell
-echo "Changing shell to zsh"
-chsh -s $(which zsh)
+# # Install Python and venv
+# echo "Installing python and venv"
+# sudo apt-get install python3
+# sudo apt install python3-venv -y
+
+# echo "Installing azure-cli"
+# curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+
+# # Install Terraform and tfenv
+# echo "Installing Terraform and tfenv"
+# sudo apt-get install terraform
+
+# echo "Cloning tfenv"
+# sudo git clone --depth=1 https://github.com/tfutils/tfenv.git /home/$username/.tfenv
+
+# # Install cmatrix
+# echo "Installing cmatrix"
+# sudo apt-get install cmatrix -y
+
+# # Install bat
+# echo "Installing bat"
+# sudo apt-get install bat -y
+
+# # Install fzf
+# echo "Installing fzf"
+# sudo apt-get install fzf
+
+# # Install zoxide
+# echo "Installing zoxide"
+# sudo apt install zoxide
+
+# # Install eza
+# echo "Installing eza"
+# sudo apt install eza -y
+
+# # Install direnv
+# echo "Installing direnv"
+# sudo apt-get install direnv
+
+# # Install jq
+# echo "Installing jq"
+# sudo apt-get install jq -y
+
+# # # Install zsh shell
+# echo "Installing zsh shell"
+# sudo apt-get install zsh
+
+# # # Install zsh plugins
+# echo "Installing zsh plugins"
+# git clone https://github.com/zsh-users/zsh-autosuggestions /home/$username/.zsh/zsh-autosuggestions
+# git clone https://github.com/zsh-users/zsh-syntax-highlighting.git /home/$username/.zsh/zsh-syntax-highlighting
+# git clone https://github.com/zsh-users/zsh-completions.git /home/$username/.zsh/zsh-completions
+
+# # # Make zsh the default shell
+# echo "Changing shell to zsh"
+# chsh -s $(which zsh)
