@@ -126,7 +126,7 @@ echo "Copy ssh key from windows"
 sudo -u $username cp -r /mnt/c/Users/$username/.ssh /home/$username/
 
 echo "Grant permissions to ssh"
-chmod 600 /home/$username/id_ed25519
+chmod 600 /home/$username/.ssh/id_ed25519
 
 echo "Install keychain"
 apt-get install keychain
