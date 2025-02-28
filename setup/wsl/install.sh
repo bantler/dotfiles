@@ -60,6 +60,10 @@ fi
 echo "User $username created successfully."
 echo "$USER"
 
+echo "Change user"
+su - $username
+echo "$USER"
+
 # # Update the list of packages
 # sudo apt-get update
 # sudo apt-get upgrade -y
