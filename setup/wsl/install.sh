@@ -126,7 +126,7 @@ touch /home/$username/.hushlogin
 # read -n 1 -s -r -p "SSH Key has been generated, now copy to github then Press any key to continue with installation..." </dev/tty
 
 echo "Copy ssh key from windows"
-cp -r /mnt/c/Users/$username/.ssh ~/.ssh
+cp -r /mnt/c/Users/$username/.ssh /home/$username/.ssh
 
 echo "Install keychain"
 sudo apt-get install keychain
