@@ -58,18 +58,15 @@ if [[ $sudo_access == "y" ]]; then
 fi
 
 echo "User $username created successfully."
-echo "$USER"
-
-echo "Change user"
-su - $username
-echo "$USER"
 
 # # Update the list of packages
-# sudo apt-get update
-# sudo apt-get upgrade -y
+echo "Install updates and upgrades"
+apt-get update
+apt-get upgrade -y
 
-# # Install pre-requisite packages.
-# sudo apt-get install -y wget apt-transport-https software-properties-common gnupg software-properties-common
+# Install pre-requisite packages.
+echo "Installing common pre-requisite packages"
+apt-get install -y wget apt-transport-https software-properties-common gnupg software-properties-common
 
 # # Get the version of Ubuntu
 # source /etc/os-release
