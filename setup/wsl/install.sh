@@ -100,7 +100,7 @@ apt-get update
 
 # Create hushlogin
 echo "Creating hushlogin."
-touch /home/$username/.hushlogin
+sudo -u $username touch /home/$username/.hushlogin
 
 # Create ssh key
 # # echo "Creating SSH Key."
