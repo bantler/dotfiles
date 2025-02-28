@@ -128,75 +128,75 @@ sudo -u $username cp -r /mnt/c/Users/$username/.ssh /home/$username/.ssh
 # echo "Grant permissions 
 # chmod 600 ~/.ssh/*
 
-# echo "Install keychain"
-# sudo apt-get install keychain
+echo "Install keychain"
+apt-get install keychain
 
-# # Instal yadm and clone dotfiles repo
-# echo "Installing yadm"
-# sudo apt-get install yadm
-# HOME=/home/$username/ yadm clone git@github.com:bantler/dotfiles.git -f
+# Instal yadm and clone dotfiles repo
+echo "Installing yadm"
+apt-get install yadm
+HOME=/home/$username/ yadm clone git@github.com:bantler/dotfiles.git -f
 
-# # Install starship
-# echo "Installing starship"
-# curl -sS https://starship.rs/install.sh | sh
+# Install starship
+echo "Installing starship"
+curl -sS https://starship.rs/install.sh | sh
 
-# # Install powershell
-# echo "Installing powershell"
-# sudo apt-get install powershell -y
+# Install powershell
+echo "Installing powershell"
+apt-get install powershell -y
 
-# # Install Python and venv
-# echo "Installing python and venv"
-# sudo apt-get install python3
-# sudo apt install python3-venv -y
+# Install Python and venv
+echo "Installing python and venv"
+apt-get install python3
+apt install python3-venv -y
 
-# echo "Installing azure-cli"
-# curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+echo "Installing azure-cli"
+curl -sL https://aka.ms/InstallAzureCLIDeb | bash
 
-# # Install Terraform and tfenv
-# echo "Installing Terraform and tfenv"
-# sudo apt-get install terraform
+# Install Terraform and tfenv
+echo "Installing Terraform and tfenv"
+apt-get install terraform
 
-# echo "Cloning tfenv"
-# sudo git clone --depth=1 https://github.com/tfutils/tfenv.git /home/$username/.tfenv
+echo "Cloning tfenv"
+git clone --depth=1 https://github.com/tfutils/tfenv.git /home/$username/.tfenv
 
-# # Install cmatrix
-# echo "Installing cmatrix"
-# sudo apt-get install cmatrix -y
+# Install cmatrix
+echo "Installing cmatrix"
+apt-get install cmatrix -y
 
-# # Install bat
-# echo "Installing bat"
-# sudo apt-get install bat -y
+# Install bat
+echo "Installing bat"
+apt-get install bat -y
 
-# # Install fzf
-# echo "Installing fzf"
-# sudo apt-get install fzf
+# Install fzf
+echo "Installing fzf"
+apt-get install fzf
 
-# # Install zoxide
-# echo "Installing zoxide"
-# sudo apt install zoxide
+# Install zoxide
+echo "Installing zoxide"
+apt install zoxide
 
-# # Install eza
-# echo "Installing eza"
-# sudo apt install eza -y
+# Install eza
+echo "Installing eza"
+apt install eza -y
 
-# # Install direnv
-# echo "Installing direnv"
-# sudo apt-get install direnv
+# Install direnv
+echo "Installing direnv"
+apt-get install direnv
 
-# # Install jq
-# echo "Installing jq"
-# sudo apt-get install jq -y
+# Install jq
+echo "Installing jq"
+apt-get install jq -y
 
-# # # Install zsh shell
-# echo "Installing zsh shell"
-# sudo apt-get install zsh
+# # Install zsh shell
+echo "Installing zsh shell"
+apt-get install zsh
 
-# # # Install zsh plugins
-# echo "Installing zsh plugins"
-# git clone https://github.com/zsh-users/zsh-autosuggestions /home/$username/.zsh/zsh-autosuggestions
-# git clone https://github.com/zsh-users/zsh-syntax-highlighting.git /home/$username/.zsh/zsh-syntax-highlighting
-# git clone https://github.com/zsh-users/zsh-completions.git /home/$username/.zsh/zsh-completions
+# # Install zsh plugins
+echo "Installing zsh plugins"
+git clone https://github.com/zsh-users/zsh-autosuggestions /home/$username/.zsh/zsh-autosuggestions
+git clone https://github.com/zsh-users/zsh-syntax-highlighting.git /home/$username/.zsh/zsh-syntax-highlighting
+git clone https://github.com/zsh-users/zsh-completions.git /home/$username/.zsh/zsh-completions
 
-# # # Make zsh the default shell
-# echo "Changing shell to zsh"
-# chsh -s $(which zsh)
+# # Make zsh the default shell
+echo "Changing shell to zsh"
+chsh -s $(which zsh)
