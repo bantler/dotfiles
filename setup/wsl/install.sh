@@ -125,8 +125,8 @@ sudo -u $username touch /home/$username/.hushlogin
 echo "Copy ssh key from windows"
 sudo -u $username cp -r /mnt/c/Users/$username/.ssh /home/$username/.ssh
 
-# echo "Grant permissions 
-# chmod 600 ~/.ssh/*
+echo "Grant permissions to ssh"
+chmod 600 ~/.ssh/*
 
 echo "Install keychain"
 apt-get install keychain
