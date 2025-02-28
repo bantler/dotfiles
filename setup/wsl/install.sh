@@ -105,25 +105,31 @@ echo "User $username created successfully."
 echo "Creating hushlogin."
 touch /home/$username/.hushlogin
 
-# Create ssh key
-echo "Creating SSH Key."
+# # Create ssh key
+# echo "Creating SSH Key."
 
-# Ask for passphrase input
-echo "Enter a passphrase for your SSH key (or press Enter for none):"
-read -s passphrase </dev/tty
+# # Ask for passphrase input
+# echo "Enter a passphrase for your SSH key (or press Enter for none):"
+# read -s passphrase </dev/tty
 
-sudo -u "$username" ssh-keygen -t ed25519 -f /home/$username/.ssh/id_ed25519 -N "$passphrase"
+# sudo -u "$username" ssh-keygen -t ed25519 -f /home/$username/.ssh/id_ed25519 -N "$passphrase"
 
-# Start SSH agent and add the key
-echo "Adding SSH key to SSH agent..."
-eval "$(ssh-agent -s)"
-ssh-add /home/$username/.ssh/id_ed25519 </dev/tty
+# # Start SSH agent and add the key
+# echo "Adding SSH key to SSH agent..."
+# eval "$(ssh-agent -s)"
+# ssh-add /home/$username/.ssh/id_ed25519 </dev/tty
 
-# Display the public key
-echo "Your new SSH public key:"
-cat /home/$username/.ssh/id_ed25519.pub
+# # Display the public key
+# echo "Your new SSH public key:"
+# cat /home/$username/.ssh/id_ed25519.pub
 
-read -n 1 -s -r -p "SSH Key has been generated, now copy to github then Press any key to continue with installation..." </dev/tty
+# read -n 1 -s -r -p "SSH Key has been generated, now copy to github then Press any key to continue with installation..." </dev/tty
+
+echo "Copy ssh key from windows"
+cp -r /mnt/c/Users/$username/.ssh ~/.ssh
+
+echo "Install keychain"
+sudo apt-get install keychain
 
 # Instal yadm and clone dotfiles repo
 echo "Installing yadm"

@@ -40,26 +40,29 @@ setopt hist_save_no_dups
 setopt hist_ignore_dups
 setopt hist_find_no_dups
 
-SSH_ENV=$HOME/.ssh/environment
+# SSH_ENV=$HOME/.ssh/environment
 
-# start the ssh-agent
-function start_agent {
-    echo "Initializing new SSH Agent ..."
+# # start the ssh-agent
+# function start_agent {
+#     echo "Initializing new SSH Agent ..."
 
-    # spawn ssh-agent
-    /usr/bin/ssh-agent | sed 's/^echo/#echo/' > "${SSH_ENV}"
+#     # spawn ssh-agent
+#     /usr/bin/ssh-agent | sed 's/^echo/#echo/' > "${SSH_ENV}"
 
-    echo "... succeeded!"
-    chmod 600 "${SSH_ENV}"
-    . "${SSH_ENV}" > /dev/null
-    /usr/bin/ssh-add
-}
+#     echo "... succeeded!"
+#     chmod 600 "${SSH_ENV}"
+#     . "${SSH_ENV}" > /dev/null
+#     /usr/bin/ssh-add
+# }
 
-if [ -f "${SSH_ENV}" ]; then
-    . "${SSH_ENV}" > /dev/null
-    ps -ef | grep ${SSH-AGENT_PID} | grep ssh-agent$ > /dev/null || {
-        start_agent;
-    }
-else
-    start_agent;
-fi
+# if [ -f "${SSH_ENV}" ]; then
+#     . "${SSH_ENV}" > /dev/null
+#     ps -ef | grep ${SSH-AGENT_PID} | grep ssh-agent$ > /dev/null || {
+#         start_agent;
+#     }
+# else
+#     start_agent;
+# fi
+
+# Load keychain
+eval ``keychain --eval --agents ssh id_ed25519
