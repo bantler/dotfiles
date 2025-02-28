@@ -68,43 +68,41 @@ apt-get upgrade -y
 echo "Installing common pre-requisite packages"
 apt-get install -y wget apt-transport-https software-properties-common gnupg software-properties-common
 
-# # Get the version of Ubuntu
-# source /etc/os-release
+# Get the version of Ubuntu
+source /etc/os-release
 
-# # Download the Microsoft repository keys
-# wget -q https://packages.microsoft.com/config/ubuntu/$VERSION_ID/packages-microsoft-prod.deb
+# Download the Microsoft repository keys
+wget -q https://packages.microsoft.com/config/ubuntu/$VERSION_ID/packages-microsoft-prod.deb
 
-# # Register the Microsoft repository keys
-# sudo dpkg -i packages-microsoft-prod.deb
+# Register the Microsoft repository keys
+sudo dpkg -i packages-microsoft-prod.deb
 
-# # Delete the Microsoft repository keys file
-# rm packages-microsoft-prod.deb
+# Delete the Microsoft repository keys file
+rm packages-microsoft-prod.deb
 
-# # Install the HashiCorp GPG key
-# wget -O- https://apt.releases.hashicorp.com/gpg | \
-# gpg --dearmor | \
-# sudo tee /usr/share/keyrings/hashicorp-archive-keyring.gpg > /dev/null
+# Install the HashiCorp GPG key
+wget -O- https://apt.releases.hashicorp.com/gpg | \
+gpg --dearmor | \
+sudo tee /usr/share/keyrings/hashicorp-archive-keyring.gpg > /dev/null
 
-# # Verify the key's fingerprint
-# gpg --no-default-keyring \
-# --keyring /usr/share/keyrings/hashicorp-archive-keyring.gpg \
-# --fingerprint
+# Verify the key's fingerprint
+gpg --no-default-keyring \
+--keyring /usr/share/keyrings/hashicorp-archive-keyring.gpg \
+--fingerprint
 
-# # Add offical hasicorp repositories
-# echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] \
-# https://apt.releases.hashicorp.com $(lsb_release -cs) main" | \
-# sudo tee /etc/apt/sources.list.d/hashicorp.list
+# Add offical hasicorp repositories
+echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] \
+https://apt.releases.hashicorp.com $(lsb_release -cs) main" | \
+sudo tee /etc/apt/sources.list.d/hashicorp.list
 
-# # Update all packages
-# sudo apt-get update
+# Update all packages
+apt-get update
 
+# Create hushlogin
+echo "Creating hushlogin."
+touch /home/$username/.hushlogin
 
-
-# # Create hushlogin
-# echo "Creating hushlogin."
-# touch /home/$username/.hushlogin
-
-# # # Create ssh key
+# Create ssh key
 # # echo "Creating SSH Key."
 
 # # # Ask for passphrase input
@@ -124,8 +122,8 @@ apt-get install -y wget apt-transport-https software-properties-common gnupg sof
 
 # # read -n 1 -s -r -p "SSH Key has been generated, now copy to github then Press any key to continue with installation..." </dev/tty
 
-# echo "Copy ssh key from windows"
-# cp -r /mnt/c/Users/$username/.ssh /home/$username/.ssh
+echo "Copy ssh key from windows"
+cp -r /mnt/c/Users/$username/.ssh /home/$username/.ssh
 
 # echo "Grant permissions 
 # chmod 600 ~/.ssh/*
