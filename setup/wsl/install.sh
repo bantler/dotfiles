@@ -177,7 +177,7 @@ apt-get install terraform
 
 # Install tfenv
 echo "Installing tfenv"
-git clone --depth=1 https://github.com/tfutils/tfenv.git /home/$default_user/.tfenv
+sudo -u $default_user git clone --depth=1 https://github.com/tfutils/tfenv.git /home/$default_user/.tfenv
 
 # Install cmatrix
 echo "Installing cmatrix"
@@ -209,9 +209,9 @@ apt-get install jq -y
 
 # Install zsh plugins
 echo "Installing zsh plugins"
-git clone https://github.com/zsh-users/zsh-autosuggestions /home/$default_user/.zsh/zsh-autosuggestions
-git clone https://github.com/zsh-users/zsh-syntax-highlighting.git /home/$default_user/.zsh/zsh-syntax-highlighting
-git clone https://github.com/zsh-users/zsh-completions.git /home/$default_user/.zsh/zsh-completions
+sudo -u $default_user git clone https://github.com/zsh-users/zsh-autosuggestions /home/$default_user/.zsh/zsh-autosuggestions
+sudo -u $default_user git clone https://github.com/zsh-users/zsh-syntax-highlighting.git /home/$default_user/.zsh/zsh-syntax-highlighting
+sudo -u $default_user git clone https://github.com/zsh-users/zsh-completions.git /home/$default_user/.zsh/zsh-completions
 
 # Install zsh shell
 echo "Installing zsh shell"
