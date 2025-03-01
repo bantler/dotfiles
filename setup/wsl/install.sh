@@ -227,9 +227,9 @@ apt-get install jq -y
 
 # Install zsh plugins
 echo "Installing zsh plugins"
-git clone https://github.com/zsh-users/zsh-autosuggestions /home/$username/.zsh/zsh-autosuggestions -f
-git clone https://github.com/zsh-users/zsh-syntax-highlighting.git /home/$username/.zsh/zsh-syntax-highlighting -f
-git clone https://github.com/zsh-users/zsh-completions.git /home/$username/.zsh/zsh-completions -f
+git clone https://github.com/zsh-users/zsh-autosuggestions /home/$username/.zsh/zsh-autosuggestions
+git clone https://github.com/zsh-users/zsh-syntax-highlighting.git /home/$username/.zsh/zsh-syntax-highlighting
+git clone https://github.com/zsh-users/zsh-completions.git /home/$username/.zsh/zsh-completions
 
 # Install zsh shell
 echo "Installing zsh shell"
