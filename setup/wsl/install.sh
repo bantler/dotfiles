@@ -213,9 +213,10 @@ apt-get install zsh
 echo "Check zsh version"
 zsh --version
 
-# Make zsh the default shell
-echo "Changing shell to zsh"
+# Make zsh the default shell for all users
+echo "Changing shell to zsh for all users"
 chsh -s $(which zsh)
+sudo -u $username chsh -s $(which zsh)
 
 # Set new user as default in wsl
 echo "Change default user to $username"
