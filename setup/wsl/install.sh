@@ -2,85 +2,85 @@
 
 # To install this script run "curl -fsSL https://raw.githubusercontent.com/bantler/dotfiles/refs/heads/main/setup/wsl/install.sh | sudo bash"
 
-# Check if the script is run as root
-if [[ $EUID -ne 0 ]]; then
-   echo "This script must be run as root. Try using sudo."
-   exit 1
-fi
+# # Check if the script is run as root
+# if [[ $EUID -ne 0 ]]; then
+#    echo "This script must be run as root. Try using sudo."
+#    exit 1
+# fi
 
-# Prompt user for new root password securely
-echo "Enter new root password:"
-read -s new_password </dev/tty
+# # Prompt user for new root password securely
+# echo "Enter new root password:"
+# read -s new_password </dev/tty
 
-echo "Confirm new root password:"
-read -s confirm_password </dev/tty
+# echo "Confirm new root password:"
+# read -s confirm_password </dev/tty
 
-# Check if passwords match
-if [[ "$new_password" != "$confirm_password" ]]; then
-    echo "Error: Passwords do not match."
-    exit 1
-fi
+# # Check if passwords match
+# if [[ "$new_password" != "$confirm_password" ]]; then
+#     echo "Error: Passwords do not match."
+#     exit 1
+# fi
 
-# Change root password
-echo "root:$new_password" | chpasswd
+# # Change root password
+# echo "root:$new_password" | chpasswd
 
-# Check if the password change was successful
-if [[ $? -eq 0 ]]; then
-    echo "Root password changed successfully."
-else
-    echo "Failed to change root password."
-    exit 1
-fi
+# # Check if the password change was successful
+# if [[ $? -eq 0 ]]; then
+#     echo "Root password changed successfully."
+# else
+#     echo "Failed to change root password."
+#     exit 1
+# fi
 
-# Prompt for username
-echo "Enter new username"
-read -s username </dev/tty
+# # Prompt for username
+# echo "Enter new username"
+# read -s username </dev/tty
 
-echo "Enter password for $username: "
-read -s password </dev/tty
+# echo "Enter password for $username: "
+# read -s password </dev/tty
 
-# Check if the user already exists
-if id "$username" &>/dev/null; then
+# # Check if the user already exists
+# if id "$username" &>/dev/null; then
  
-    # Prompt for user deletion
-    read -p "User '$username' already exists! Do you want to delete the user $username? (y/n): " del_user </dev/tty
-    if [[ $del_user == "y" ]]; then
-        sudo userdel $username -f
-        echo "Existing user $username deleted"
-        sudo rm -rf /home/$username
-        echo "Existing user $username home directory deleted. A fresh user will now be created."
+#     # Prompt for user deletion
+#     read -p "User '$username' already exists! Do you want to delete the user $username? (y/n): " del_user </dev/tty
+#     if [[ $del_user == "y" ]]; then
+#         sudo userdel $username -f
+#         echo "Existing user $username deleted"
+#         sudo rm -rf /home/$username
+#         echo "Existing user $username home directory deleted. A fresh user will now be created."
 
-        # Create the user
-        sudo useradd -m -s /bin/bash "$username"
+#         # Create the user
+#         sudo useradd -m -s /bin/bash "$username"
 
-        # Change user password
-        echo "$username:$password" | sudo chpasswd
+#         # Change user password
+#         echo "$username:$password" | sudo chpasswd
 
-        # Prompt for sudo access
-        read -p "Grant sudo access to $username? (y/n): " sudo_access </dev/tty
-        if [[ $sudo_access == "y" ]]; then
-            sudo usermod -aG sudo "$username"
-            echo "$username has been added to the sudo group."
-        fi
+#         # Prompt for sudo access
+#         read -p "Grant sudo access to $username? (y/n): " sudo_access </dev/tty
+#         if [[ $sudo_access == "y" ]]; then
+#             sudo usermod -aG sudo "$username"
+#             echo "$username has been added to the sudo group."
+#         fi
 
-        echo "User $username created successfully."
-    fi
-else
-    # Create the user
-    sudo useradd -m -s /bin/bash "$username"
+#         echo "User $username created successfully."
+#     fi
+# else
+#     # Create the user
+#     sudo useradd -m -s /bin/bash "$username"
 
-    # Change user password
-    echo "$username:$password" | sudo chpasswd
+#     # Change user password
+#     echo "$username:$password" | sudo chpasswd
 
-    # Prompt for sudo access
-    read -p "Grant sudo access to $username? (y/n): " sudo_access </dev/tty
-    if [[ $sudo_access == "y" ]]; then
-        sudo usermod -aG sudo "$username"
-        echo "$username has been added to the sudo group."
-    fi
+#     # Prompt for sudo access
+#     read -p "Grant sudo access to $username? (y/n): " sudo_access </dev/tty
+#     if [[ $sudo_access == "y" ]]; then
+#         sudo usermod -aG sudo "$username"
+#         echo "$username has been added to the sudo group."
+#     fi
 
-    echo "User $username created successfully."
-fi
+#     echo "User $username created successfully."
+# fi
 
 # Update the list of packages
 echo "Install updates and upgrades"
