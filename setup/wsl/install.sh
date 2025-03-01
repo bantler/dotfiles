@@ -2,6 +2,8 @@
 
 # To install this script run "curl -fsSL https://raw.githubusercontent.com/bantler/dotfiles/refs/heads/main/setup/wsl/install.sh | sudo bash"
 
+default_user=$(getent passwd 1000 | cut -d: -f1)
+
 # # Check if the script is run as root
 # if [[ $EUID -ne 0 ]]; then
 #    echo "This script must be run as root. Try using sudo."
@@ -129,28 +131,26 @@ echo "Install updates and updates"
 apt-get update
 apt-get upgrade -y
 
-echo $USER
-
 # Create sudo_as_admin_successful
 echo "Creating sudo_as_admin_successful"
-touch ~/.sudo_as_admin_successful
+sudo -u $default_user touch /home/$default_user/.sudo_as_admin_successful
 
 # Create hushlogin
 echo "Creating hushlogin."
-touch ~/.hushlogin
+sudo -u $default_user touch /home/$default_user/.hushlogin
 
 echo "Copy ssh key from windows"
-cp -r /mnt/c/Users/$USER/.ssh ~/
+sudo -u $default_user cp -r /mnt/c/Users/$default_user/.ssh /home/$default_user/
 
 echo "Grant permissions to ssh"
-chmod 600 ~/.ssh/id_ed25519
+chmod 600 /home/$default_user/.ssh/id_ed25519
 
 # Install yadm and clone dotfiles repo
 echo "Installing yadm"
 apt-get install yadm
 
 echo "Clone dotfiles repo"
-yadm clone git@github.com:bantler/dotfiles.git -f
+sudo -u $default_user yadm clone git@github.com:bantler/dotfiles.git -f
 
 # Install starship
 echo "Installing starship"
@@ -174,7 +174,7 @@ apt-get install terraform
 
 # Install tfenv
 echo "Installing tfenv"
-git clone --depth=1 https://github.com/tfutils/tfenv.git ~/.tfenv
+git clone --depth=1 https://github.com/tfutils/tfenv.git /home/$default_user/.tfenv
 
 # Install cmatrix
 echo "Installing cmatrix"
@@ -206,15 +206,15 @@ apt-get install jq -y
 
 # Install zsh plugins
 echo "Installing zsh plugins"
-git clone https://github.com/zsh-users/zsh-autosuggestions ~/.zsh/zsh-autosuggestions
-git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.zsh/zsh-syntax-highlighting
-git clone https://github.com/zsh-users/zsh-completions.git ~/.zsh/zsh-completions
+git clone https://github.com/zsh-users/zsh-autosuggestions /home/$default_user/.zsh/zsh-autosuggestions
+git clone https://github.com/zsh-users/zsh-syntax-highlighting.git /home/$default_user/.zsh/zsh-syntax-highlighting
+git clone https://github.com/zsh-users/zsh-completions.git /home/$default_user/.zsh/zsh-completions
 
 # Install zsh shell
 echo "Installing zsh shell"
-apt-get install -y zsh || exit 1
+sudo apt-get install -y zsh || exit 1
 
 # Set Zsh as the default shell without switching immediately
 echo "Changing shell to zsh for all users"
 chsh -s $(which zsh) $USER || true
-#chsh -s $(which zsh) root:root || true
+chsh -s $(which zsh) $default_user || true
