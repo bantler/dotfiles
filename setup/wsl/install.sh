@@ -41,7 +41,7 @@
 
 # # Check if the user already exists
 # if id "$username" &>/dev/null; then
- 
+
 #     # Prompt for user deletion
 #     read -p "User '$username' already exists! Do you want to delete the user $username? (y/n): " del_user </dev/tty
 #     if [[ $del_user == "y" ]]; then
@@ -128,6 +128,8 @@ sudo chmod 644 /etc/apt/keyrings/gierens.gpg /etc/apt/sources.list.d/gierens.lis
 echo "Install updates and updates"
 apt-get update
 apt-get upgrade -y
+
+echo $USER
 
 # Create sudo_as_admin_successful
 echo "Creating sudo_as_admin_successful"
