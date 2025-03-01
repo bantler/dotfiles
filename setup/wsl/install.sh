@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# To install this script run "curl -sS https://raw.githubusercontent.com/bantler/dotfiles/refs/heads/main/setup/wsl/install.sh | sudo bash"
+# To install this script run "curl -fsSL https://raw.githubusercontent.com/bantler/dotfiles/refs/heads/main/setup/wsl/install.sh | sudo bash"
 
 # # Check if the script is run as root
 # if [[ $EUID -ne 0 ]]; then
@@ -213,7 +213,7 @@
 
 # Install zsh shell
 echo "Installing zsh shell"
-apt-get install zsh
+apt-get install zsh || exit 1
 
 # Check zsh version
 echo "Check zsh version"
