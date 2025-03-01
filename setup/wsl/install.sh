@@ -48,10 +48,11 @@ if id "$username" &>/dev/null; then
 
     # Prompt for user deletion
     read -p "User '$username' already exists! Do you want to delete the user $username? (y/n): " del_user </dev/tty
-    if [[ del_user == "y" ]]; then
+    if [[ $del_user == "y" ]]; then
         sudo userdel $username -f
+        echo "Existing user $username deleted"
         sudo rm -rf /home/$username
-        echo "$username has now been deleted. A fresh user will now be created."
+        echo "Existing user $username home directory deleted. A fresh user will now be created."
 
         # Create the user
         sudo useradd -m -s /bin/bash "$username"
