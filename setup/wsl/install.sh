@@ -211,13 +211,13 @@
 # git clone https://github.com/zsh-users/zsh-syntax-highlighting.git /home/$username/.zsh/zsh-syntax-highlighting
 # git clone https://github.com/zsh-users/zsh-completions.git /home/$username/.zsh/zsh-completions
 
-# Install zsh shell
-echo "Installing zsh shell"
-sudo apt-get install zsh || exit 1
+# # Install zsh shell
+# echo "Installing zsh shell"
+# sudo apt-get install zsh
 
-# Check zsh version
-echo "Check zsh version"
-zsh --version
+# # Check zsh version
+# echo "Check zsh version"
+# zsh --version
 
 # # Make zsh the default shell for all users
 # echo "Changing shell to zsh for all users"
@@ -227,3 +227,15 @@ zsh --version
 # # Set new user as default in wsl
 # echo "Change default user to $username"
 # echo -e "[user]\ndefault=bantler" | sudo tee -a /etc/wsl.conf > /dev/null
+
+# Install Zsh
+sudo apt install -y zsh || exit 1
+
+# Ensure script continues
+echo "Zsh installed successfully."
+
+# Set Zsh as the default shell without switching immediately
+chsh -s $(which zsh) $USER || true
+
+# Continue with the rest of your script
+echo "Continuing with the script..."
