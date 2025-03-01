@@ -134,7 +134,8 @@ apt-get install keychain
 # Instal yadm and clone dotfiles repo
 echo "Installing yadm"
 apt-get install yadm
-HOME=/home/$username/ yadm clone git@github.com:bantler/dotfiles.git -f
+#HOME=/home/$username/ yadm clone git@github.com:bantler/dotfiles.git -f
+sudo -u $username yadm clone git@github.com:bantler/dotfiles.git -f
 
 # Install starship
 echo "Installing starship"
