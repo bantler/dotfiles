@@ -87,10 +87,6 @@ echo "Install updates and upgrades"
 apt-get update
 apt-get upgrade -y
 
-# Install pre-requisite packages.
-echo "Installing common pre-requisite packages"
-apt-get install -y apt-transport-https software-properties-common
-
 # Get the version of Ubuntu
 source /etc/os-release
 

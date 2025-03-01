@@ -395,5 +395,14 @@ properties:
         id: "Warp.Warp"
         source: winget
       id: Warp.Warp
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Installing VideoLAN.VLC
+        allowPrerelease: true
+        securityContext: current
+      settings:
+        id: "VideoLAN.VLC"
+        source: winget
+      id: VideoLAN.VLC
   configurationVersion: 0.2.0
 
