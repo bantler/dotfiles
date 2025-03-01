@@ -50,6 +50,7 @@ if id "$username" &>/dev/null; then
     read -p "User '$username' already exists! Do you want to delete the user $username? (y/n): " del_user </dev/tty
     if [[ del_user == "y" ]]; then
         sudo userdel $username -f
+        sudo rm -rf /home/$username
         echo "$username has now been deleted. A fresh user will now be created."
 
         # Create the user
