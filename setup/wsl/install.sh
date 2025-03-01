@@ -41,8 +41,32 @@ read -s password </dev/tty
 
 # Check if the user already exists
 if id "$username" &>/dev/null; then
-    echo "User '$username' already exists!"
-    rm -rf /home/banlter/*
+    #echo "User '$username' already exists!"
+    
+    #echo "Deleting all existing user data"
+    #rm -rf /home/$username/*
+
+    # Prompt for user deletion
+    read -p "User '$username' already exists! Do you want to delete the user $username? (y/n): " del_user </dev/tty
+    if [[ del_user == "y" ]]; then
+        sudo userdel $username -f
+        echo "$username has now been deleted. A fresh user will now be created."
+
+        # Create the user
+        sudo useradd -m -s /bin/bash "$username"
+
+        # Change user password
+        echo "$username:$password" | sudo chpasswd
+
+        # Prompt for sudo access
+        read -p "Grant sudo access to $username? (y/n): " sudo_access </dev/tty
+        if [[ $sudo_access == "y" ]]; then
+            sudo usermod -aG sudo "$username"
+            echo "$username has been added to the sudo group."
+        fi
+
+        echo "User $username created successfully."
+    fi
 else
     # Create the user
     sudo useradd -m -s /bin/bash "$username"
