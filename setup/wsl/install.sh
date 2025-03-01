@@ -213,12 +213,11 @@ git clone https://github.com/zsh-users/zsh-completions.git /home/$username/.zsh/
 
 # Install zsh shell
 echo "Installing zsh shell"
-sudo apt install -y zsh || exit 1
+apt install -y zsh || exit 1
 
 # Set Zsh as the default shell without switching immediately
 echo "Changing shell to zsh for all users"
 chsh -s $(which zsh) $USER || true
-sudo -u $username chsh -s $(which zsh)
 
 # Set new user as default in wsl
 echo "Change default user to $username"
