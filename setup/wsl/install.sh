@@ -2,10 +2,6 @@
 
 # To install this script run "curl -fsSL https://raw.githubusercontent.com/bantler/dotfiles/refs/heads/main/setup/wsl/install.sh | sudo bash"
 
-echo "Get default user"
-default_user=$(getent passwd 1000 | cut -d: -f1)
-echo $default_user
-
 # # Check if the script is run as root
 # if [[ $EUID -ne 0 ]]; then
 #    echo "This script must be run as root. Try using sudo."
@@ -132,6 +128,11 @@ sudo chmod 644 /etc/apt/keyrings/gierens.gpg /etc/apt/sources.list.d/gierens.lis
 echo "Install updates and updates"
 apt-get update
 apt-get upgrade -y
+
+# Get default user
+echo "Get default user"
+default_user=$(getent passwd 1000 | cut -d: -f1)
+echo $default_user
 
 # Create sudo_as_admin_successful
 echo "Creating sudo_as_admin_successful"
