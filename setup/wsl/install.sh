@@ -41,11 +41,7 @@ read -s password </dev/tty
 
 # Check if the user already exists
 if id "$username" &>/dev/null; then
-    #echo "User '$username' already exists!"
-    
-    #echo "Deleting all existing user data"
-    #rm -rf /home/$username/*
-
+ 
     # Prompt for user deletion
     read -p "User '$username' already exists! Do you want to delete the user $username? (y/n): " del_user </dev/tty
     if [[ $del_user == "y" ]]; then
@@ -93,7 +89,7 @@ apt-get upgrade -y
 
 # Install pre-requisite packages.
 echo "Installing common pre-requisite packages"
-apt-get install -y wget apt-transport-https software-properties-common gnupg software-properties-common gpg
+apt-get install -y apt-transport-https software-properties-common
 
 # Get the version of Ubuntu
 source /etc/os-release
