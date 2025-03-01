@@ -129,22 +129,26 @@ echo "Install updates and updates"
 apt-get update
 apt-get upgrade -y
 
+# Create sudo_as_admin_successful
+echo "Creating sudo_as_admin_successful"
+touch ~/.sudo_as_admin_successful
+
 # Create hushlogin
 echo "Creating hushlogin."
-sudo -u $username touch /home/$username/.hushlogin
+touch ~/.hushlogin
 
 echo "Copy ssh key from windows"
-sudo -u $username cp -r /mnt/c/Users/$username/.ssh /home/$username/
+cp -r /mnt/c/Users/$USER/.ssh ~/
 
 echo "Grant permissions to ssh"
-chmod 600 /home/$username/.ssh/id_ed25519
+chmod 600 ~/.ssh/id_ed25519
 
 # Install yadm and clone dotfiles repo
 echo "Installing yadm"
 apt-get install yadm
 
 echo "Clone dotfiles repo"
-sudo -u $username yadm clone git@github.com:bantler/dotfiles.git -f
+yadm clone git@github.com:bantler/dotfiles.git -f
 
 # Install starship
 echo "Installing starship"
@@ -157,7 +161,7 @@ apt-get install powershell -y
 # Install Python and venv
 echo "Installing python and venv"
 apt-get install python3
-apt install python3-venv -y
+apt-get install python3-venv -y
 
 echo "Installing azure-cli"
 curl -sL https://aka.ms/InstallAzureCLIDeb | bash
@@ -168,7 +172,7 @@ apt-get install terraform
 
 # Install tfenv
 echo "Installing tfenv"
-git clone --depth=1 https://github.com/tfutils/tfenv.git /home/$username/.tfenv
+git clone --depth=1 https://github.com/tfutils/tfenv.git ~/.tfenv
 
 # Install cmatrix
 echo "Installing cmatrix"
@@ -184,11 +188,11 @@ apt-get install fzf
 
 # Install zoxide
 echo "Installing zoxide"
-apt install zoxide
+apt-get install zoxide
 
 # Install eza
 echo "Installing eza"
-apt install eza -y
+apt-get install eza -y
 
 # Install direnv
 echo "Installing direnv"
@@ -200,19 +204,15 @@ apt-get install jq -y
 
 # Install zsh plugins
 echo "Installing zsh plugins"
-git clone https://github.com/zsh-users/zsh-autosuggestions /home/$username/.zsh/zsh-autosuggestions
-git clone https://github.com/zsh-users/zsh-syntax-highlighting.git /home/$username/.zsh/zsh-syntax-highlighting
-git clone https://github.com/zsh-users/zsh-completions.git /home/$username/.zsh/zsh-completions
+git clone https://github.com/zsh-users/zsh-autosuggestions ~/.zsh/zsh-autosuggestions
+git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.zsh/zsh-syntax-highlighting
+git clone https://github.com/zsh-users/zsh-completions.git ~/.zsh/zsh-completions
 
 # Install zsh shell
 echo "Installing zsh shell"
-sudo apt install -y zsh || exit 1
+apt-get install -y zsh || exit 1
 
 # Set Zsh as the default shell without switching immediately
 echo "Changing shell to zsh for all users"
 chsh -s $(which zsh) $USER || true
-chsh -s $(which zsh) $username || true
-
-# Set new user as default in wsl
-echo "Change default user to $username"
-echo -e "[user]\ndefault=$username" | sudo tee -a /etc/wsl.conf > /dev/null
+#chsh -s $(which zsh) root:root || true
