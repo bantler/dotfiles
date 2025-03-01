@@ -213,7 +213,7 @@ git clone https://github.com/zsh-users/zsh-completions.git /home/$username/.zsh/
 
 # Install zsh shell
 echo "Installing zsh shell"
-apt install -y zsh || exit 1
+sudo apt install -y zsh || exit 1
 
 # Set Zsh as the default shell without switching immediately
 echo "Changing shell to zsh for all users"
