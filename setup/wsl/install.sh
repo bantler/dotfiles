@@ -66,7 +66,7 @@ apt-get upgrade -y
 
 # Install pre-requisite packages.
 echo "Installing common pre-requisite packages"
-apt-get install -y wget apt-transport-https software-properties-common gnupg software-properties-common
+apt-get install -y wget apt-transport-https software-properties-common gnupg software-properties-common gpg
 
 # Get the version of Ubuntu
 source /etc/os-release
@@ -94,6 +94,12 @@ gpg --no-default-keyring \
 echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] \
 https://apt.releases.hashicorp.com $(lsb_release -cs) main" | \
 sudo tee /etc/apt/sources.list.d/hashicorp.list
+
+# Add keyrings and repositories for eza
+sudo mkdir -p /etc/apt/keyrings
+wget -qO- https://raw.githubusercontent.com/eza-community/eza/main/deb.asc | sudo gpg --dearmor -o /etc/apt/keyrings/gierens.gpg
+echo "deb [signed-by=/etc/apt/keyrings/gierens.gpg] http://deb.gierens.de stable main" | sudo tee /etc/apt/sources.list.d/gierens.list
+sudo chmod 644 /etc/apt/keyrings/gierens.gpg /etc/apt/sources.list.d/gierens.list
 
 # Update all packages
 echo "Install updates and updates"
