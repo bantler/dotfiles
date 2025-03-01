@@ -215,9 +215,9 @@
 echo "Installing zsh shell"
 apt-get install zsh
 
-# # Check zsh version
-# echo "Check zsh version"
-# zsh --version
+# Check zsh version
+echo "Check zsh version"
+zsh --version
 
 # # Make zsh the default shell for all users
 # echo "Changing shell to zsh for all users"
