@@ -218,8 +218,8 @@ apt install -y zsh || exit 1
 # Set Zsh as the default shell without switching immediately
 echo "Changing shell to zsh for all users"
 sudo chsh -s $(which zsh)
-#sudo -u $username chsh -s $(which zsh)
+sudo -u $username chsh -s $(which zsh)
 
 # Set new user as default in wsl
 echo "Change default user to $username"
-echo -e "[user]\ndefault=bantler" | sudo tee -a /etc/wsl.conf > /dev/null
+echo -e "[user]\ndefault=$username" | sudo tee -a /etc/wsl.conf > /dev/null
