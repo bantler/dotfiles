@@ -213,7 +213,7 @@
 
 # Install zsh shell
 echo "Installing zsh shell"
-apt-get install zsh || exit 1
+sudo apt-get install zsh || exit 1
 
 # Check zsh version
 echo "Check zsh version"
