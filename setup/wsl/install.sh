@@ -211,4 +211,5 @@ echo "Changing shell to zsh"
 chsh -s $(which zsh)
 
 # Set new user as default in wsl
+echo "Change default user to $username"
 echo -e "[user]\ndefault=bantler" | sudo tee -a /etc/wsl.conf > /dev/null
