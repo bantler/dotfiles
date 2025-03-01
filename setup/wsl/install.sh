@@ -96,7 +96,9 @@ https://apt.releases.hashicorp.com $(lsb_release -cs) main" | \
 sudo tee /etc/apt/sources.list.d/hashicorp.list
 
 # Update all packages
+echo "Install updates and updates"
 apt-get update
+apt-get upgrade -y
 
 # Create hushlogin
 echo "Creating hushlogin."
@@ -131,10 +133,11 @@ chmod 600 /home/$username/.ssh/id_ed25519
 echo "Install keychain"
 apt-get install keychain
 
-# Instal yadm and clone dotfiles repo
+# Install yadm and clone dotfiles repo
 echo "Installing yadm"
 apt-get install yadm
-#HOME=/home/$username/ yadm clone git@github.com:bantler/dotfiles.git -f
+
+echo "Clone dotfiles repo"
 sudo -u $username yadm clone git@github.com:bantler/dotfiles.git -f
 
 # Install starship
@@ -153,11 +156,12 @@ apt install python3-venv -y
 echo "Installing azure-cli"
 curl -sL https://aka.ms/InstallAzureCLIDeb | bash
 
-# Install Terraform and tfenv
-echo "Installing Terraform and tfenv"
+# Install Terraform
+echo "Installing Terraform"
 apt-get install terraform
 
-echo "Cloning tfenv"
+# Install tfenv
+echo "Installing tfenv"
 git clone --depth=1 https://github.com/tfutils/tfenv.git /home/$username/.tfenv
 
 # Install cmatrix
@@ -188,16 +192,20 @@ apt-get install direnv
 echo "Installing jq"
 apt-get install jq -y
 
-# # Install zsh shell
-echo "Installing zsh shell"
-apt-get install zsh
-
-# # Install zsh plugins
+# Install zsh plugins
 echo "Installing zsh plugins"
 git clone https://github.com/zsh-users/zsh-autosuggestions /home/$username/.zsh/zsh-autosuggestions
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git /home/$username/.zsh/zsh-syntax-highlighting
 git clone https://github.com/zsh-users/zsh-completions.git /home/$username/.zsh/zsh-completions
 
-# # Make zsh the default shell
+# Install zsh shell
+echo "Installing zsh shell"
+apt-get install zsh
+
+# Check zsh version
+echo "Check zsh version"
+zsh --version
+
+# Make zsh the default shell
 echo "Changing shell to zsh"
 chsh -s $(which zsh)
