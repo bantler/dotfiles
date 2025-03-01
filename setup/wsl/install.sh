@@ -217,7 +217,7 @@ apt install -y zsh || exit 1
 
 # Set Zsh as the default shell without switching immediately
 echo "Changing shell to zsh for all users"
-chsh -s $(which zsh)
+sudo chsh -s $(which zsh)
 #sudo -u $username chsh -s $(which zsh)
 
 # Set new user as default in wsl
