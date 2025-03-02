@@ -142,11 +142,18 @@ sudo -u $default_user touch /home/$default_user/.sudo_as_admin_successful
 echo "Creating hushlogin."
 sudo -u $default_user touch /home/$default_user/.hushlogin
 
-echo "Copy ssh key from windows"
-sudo -u $default_user cp -r /mnt/c/Users/$default_user/.ssh /home/$default_user/
+echo "Copy ssh key from windows or from WSL"
+if [ -n "$WSL_DISTRO_NAME" ]; then
+    echo "Running in WSL: $WSL_DISTRO_NAME"
+    
+    echo "Copying ssh key from windows"
+    sudo -u $default_user cp -r /mnt/c/Users/$default_user/.ssh /home/$default_user/
 
-echo "Grant permissions to ssh"
-chmod 600 /home/$default_user/.ssh/id_ed25519
+    echo "Grant permissions to ssh"
+    chmod 600 /home/$default_user/.ssh/id_ed25519
+else
+    echo "Not running in WSL, ssh keys will need copying manually before running this script"
+fi
 
 # Install yadm and clone dotfiles repo
 echo "Installing yadm"
