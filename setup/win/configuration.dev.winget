@@ -1,4 +1,5 @@
 # yaml-language-server: $schema=https://aka.ms/configuration-dsc-schema/0.2
+# To use this script download locally and run "winget configure -f <C:/Users/<username>/winget-configs/config-file-name.dsc.yaml>" in powershell.
 
 properties:
   assertions:
