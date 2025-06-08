@@ -1,0 +1,309 @@
+# yaml-language-server: $schema=https://aka.ms/configuration-dsc-schema/0.2
+
+properties:
+  assertions:
+    - resource: Microsoft.Windows.Developer/OsVersion
+      directives:
+        description: Verify min OS version requirement
+        allowPrerelease: true
+      settings:
+        MinVersion: '10.0.22000'
+  resources:
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Installing Microsoft.PowerShell
+        allowPrerelease: true
+        securityContext: current
+      settings:
+        id: "Microsoft.PowerShell"
+        source: winget
+      id: Microsoft.PowerShell
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Installing 7zip.7zip
+        allowPrerelease: true
+        securityContext: current
+      settings:
+        id: "7zip.7zip"
+        source: winget
+      id: 7zip.7zip
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Installing CPUID.CPU-Z.MSI
+        allowPrerelease: true
+        securityContext: current
+      settings:
+        id: "CPUID.CPU-Z.MSI"
+        source: winget
+      id: CPUID.CPU-Z.MSI
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Installing 9WZDNCRD29V9
+        allowPrerelease: true
+        securityContext: current
+      settings:
+        id: "9WZDNCRD29V9"
+        source: msstore
+      id: 9WZDNCRD29V9
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Installing Piriform.Speccy
+        allowPrerelease: true
+        securityContext: current
+      settings:
+        id: "Piriform.Speccy"
+        source: winget
+      id: Piriform.Speccy
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Installing SteelSeries.GG
+        allowPrerelease: true
+        securityContext: current
+      settings:
+        id: "SteelSeries.GG"
+        source: winget
+      id: SteelSeries.GG
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Installing RARLab.WinRAR
+        allowPrerelease: true
+        securityContext: current
+      settings:
+        id: "RARLab.WinRAR"
+        source: winget
+      id: RARLab.WinRAR
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Installing Corsair.iCUE.5
+        allowPrerelease: true
+        securityContext: current
+      settings:
+        id: "Corsair.iCUE.5"
+        source: winget
+      id: Corsair.iCUE.5
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Installing 9NVMNJCR03XV
+        allowPrerelease: true
+        securityContext: current
+      settings:
+        id: "9NVMNJCR03XV"
+        source: msstore
+      id: 9NVMNJCR03XV
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Installing GIGABYTE.RGBFusion
+        allowPrerelease: true
+        securityContext: current
+      settings:
+        id: "GIGABYTE.RGBFusion"
+        source: winget
+      id: GIGABYTE.RGBFusion
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Installing Microsoft.Edge
+        allowPrerelease: true
+        securityContext: current
+      settings:
+        id: "Microsoft.Edge"
+        source: winget
+      id: Microsoft.Edge
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Installing XP9CDQW6ML4NQN
+        allowPrerelease: true
+        securityContext: current
+      settings:
+        id: "XP9CDQW6ML4NQN"
+        source: msstore
+      id: XP9CDQW6ML4NQN
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Installing RazerInc.RazerInstaller.Synapse4
+        allowPrerelease: true
+        securityContext: current
+      settings:
+        id: "RazerInc.RazerInstaller.Synapse4"
+        source: winget
+      id: RazerInc.RazerInstaller.Synapse4
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Installing 9PK9W5QV2PKX
+        allowPrerelease: true
+        securityContext: current
+      settings:
+        id: "9PK9W5QV2PKX"
+        source: msstore
+      id: 9PK9W5QV2PKX
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Installing Seagate.SeaTools
+        allowPrerelease: true
+        securityContext: current
+      settings:
+        id: "Seagate.SeaTools"
+        source: winget
+      id: Seagate.SeaTools
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Installing Valve.Steam
+        allowPrerelease: true
+        securityContext: current
+      settings:
+        id: "Valve.Steam"
+        source: winget
+      id: Valve.Steam
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Installing Discord.Discord
+        allowPrerelease: true
+        securityContext: current
+      settings:
+        id: "Discord.Discord"
+        source: winget
+      id: Discord.Discord
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Installing WhirlwindFX.SignalRgb
+        allowPrerelease: true
+        securityContext: current
+      settings:
+        id: "WhirlwindFX.SignalRgb"
+        source: winget
+      id: WhirlwindFX.SignalRgb
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Installing Sky.SkyGo
+        allowPrerelease: true
+        securityContext: current
+      settings:
+        id: "Sky.SkyGo"
+        source: winget
+      id: Sky.SkyGo
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Installing 9WZDNCRFJ3TJ
+        allowPrerelease: true
+        securityContext: current
+      settings:
+        id: "9WZDNCRFJ3TJ"
+        source: msstore
+      id: 9WZDNCRFJ3TJ
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Installing 9NKSQGP7F2NH
+        allowPrerelease: true
+        securityContext: current
+      settings:
+        id: "9NKSQGP7F2NH"
+        source: msstore
+      id: 9NKSQGP7F2NH
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Installing 9P6RC76MSMMJ
+        allowPrerelease: true
+        securityContext: current
+      settings:
+        id: "9P6RC76MSMMJ"
+        source: msstore
+      id: 9P6RC76MSMMJ
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Installing 9NXQXXLFST89
+        allowPrerelease: true
+        securityContext: current
+      settings:
+        id: "9NXQXXLFST89"
+        source: msstore
+      id: 9NXQXXLFST89
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Installing 9N0866FS04W8
+        allowPrerelease: true
+        securityContext: current
+      settings:
+        id: "9N0866FS04W8"
+        source: msstore
+      id: 9N0866FS04W8
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Installing Microsoft.Teams.Free
+        allowPrerelease: true
+        securityContext: current
+      settings:
+        id: "Microsoft.Teams.Free"
+        source: winget
+      id: Microsoft.Teams.Free
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Installing 9P6PMZTM93LR
+        allowPrerelease: true
+        securityContext: current
+      settings:
+        id: "9P6PMZTM93LR"
+        source: msstore
+      id: 9P6PMZTM93LR
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Installing 9MVZQVXJBQ9V
+        allowPrerelease: true
+        securityContext: current
+      settings:
+        id: "9MVZQVXJBQ9V"
+        source: msstore
+      id: 9MVZQVXJBQ9V
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Installing 9NHT9RB2F4HD
+        allowPrerelease: true
+        securityContext: current
+      settings:
+        id: "9NHT9RB2F4HD"
+        source: msstore
+      id: 9NHT9RB2F4HD
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Installing 9PMMSR1CGPWG
+        allowPrerelease: true
+        securityContext: current
+      settings:
+        id: "9PMMSR1CGPWG"
+        source: msstore
+      id: 9PMMSR1CGPWG
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Installing Microsoft.OneDrive
+        allowPrerelease: true
+        securityContext: current
+      settings:
+        id: "Microsoft.OneDrive"
+        source: winget
+      id: Microsoft.OneDrive
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Installing 9NRX63209R7B
+        allowPrerelease: true
+        securityContext: current
+      settings:
+        id: "9NRX63209R7B"
+        source: msstore
+      id: 9NRX63209R7B
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Installing 9NCBCSZSJRSB
+        allowPrerelease: true
+        securityContext: current
+      settings:
+        id: "9NCBCSZSJRSB"
+        source: msstore
+      id: 9NCBCSZSJRSB
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Installing 9NBLGGH4VVNH
+        allowPrerelease: true
+        securityContext: current
+      settings:
+        id: "9NBLGGH4VVNH"
+        source: msstore
+      id: 9NBLGGH4VVNH
+  configurationVersion: 0.2.0
