@@ -99,15 +99,6 @@ properties:
       id: PuTTY.PuTTY
     - resource: Microsoft.WinGet.DSC/WinGetPackage
       directives:
-        description: Installing Postman.Postman
-        allowPrerelease: true
-        securityContext: current
-      settings:
-        id: "Postman.Postman"
-        source: winget
-      id: Postman.Postman
-    - resource: Microsoft.WinGet.DSC/WinGetPackage
-      directives:
         description: Installing Dolby Access
         allowPrerelease: true
         securityContext: current
@@ -144,15 +135,6 @@ properties:
       id: 9MSPC6MP8FM4
     - resource: Microsoft.WinGet.DSC/WinGetPackage
       directives:
-        description: Installing Microsoft Remote Desktop
-        allowPrerelease: true
-        securityContext: current
-      settings:
-        id: "9WZDNCRFJ3PS"
-        source: msstore
-      id: 9WZDNCRFJ3PS
-    - resource: Microsoft.WinGet.DSC/WinGetPackage
-      directives:
         description: Installing Microsoft.Azd
         allowPrerelease: true
         securityContext: current
@@ -160,15 +142,6 @@ properties:
         id: "Microsoft.Azd"
         source: winget
       id: Microsoft.Azd
-    - resource: Microsoft.WinGet.DSC/WinGetPackage
-      directives:
-        description: Installing Dev Home Azure Extention (Preview)
-        allowPrerelease: true
-        securityContext: current
-      settings:
-        id: "9MV8F79FGXTR"
-        source: msstore
-      id: 9MV8F79FGXTR
     - resource: Microsoft.WinGet.DSC/WinGetPackage
       directives:
         description: Installing Microsoft.Azure.AZCopy.10
@@ -187,15 +160,6 @@ properties:
         id: "9NT1R1C2HH7J"
         source: msstore
       id: 9NT1R1C2HH7J
-    - resource: Microsoft.WinGet.DSC/WinGetPackage
-      directives:
-        description: Installing Microsoft.AzureDataStudio
-        allowPrerelease: true
-        securityContext: current
-      settings:
-        id: "Microsoft.AzureDataStudio"
-        source: winget
-      id: Microsoft.AzureDataStudio
     - resource: Microsoft.WinGet.DSC/WinGetPackage
       directives:
         description: Installing Zoom Workplace
@@ -315,15 +279,6 @@ properties:
       id: 9WZDNCRDFNG7
     - resource: Microsoft.WinGet.DSC/WinGetPackage
       directives:
-        description: Installing Dev Home Github Extention
-        allowPrerelease: true
-        securityContext: current
-      settings:
-        id: "9NZCC27PR6N6"
-        source: msstore
-      id: 9NZCC27PR6N6
-    - resource: Microsoft.WinGet.DSC/WinGetPackage
-      directives:
         description: Installing Google.Chrome
         allowPrerelease: true
         securityContext: current
@@ -403,5 +358,23 @@ properties:
         id: "VideoLAN.VLC"
         source: winget
       id: VideoLAN.VLC
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Installing Microsoft WSL
+        allowPrerelease: true
+        securityContext: current
+      settings:
+        id: "Microsoft.WSL"
+        source: winget
+      id: Microsoft.WSL
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Installing Microsoft.WindowsTerminal
+        allowPrerelease: true
+        securityContext: current
+      settings:
+        id: "Microsoft.WindowsTerminal"
+        source: winget
+      id: Microsoft.WindowsTerminal
   configurationVersion: 0.2.0
 
