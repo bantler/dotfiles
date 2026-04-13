@@ -45,22 +45,31 @@ properties:
       id: Git.Git
     - resource: Microsoft.WinGet.DSC/WinGetPackage
       directives:
-        description: Installing Microsoft.VisualStudio.2022.Community
+        description: Installing GnuWin32.Make
         allowPrerelease: true
         securityContext: current
       settings:
-        id: "Microsoft.VisualStudio.2022.Community"
+        id: "GnuWin32.Make"
         source: winget
-      id: Microsoft.VisualStudio.2022.Community
+      id: GnuWin32.Make
     - resource: Microsoft.WinGet.DSC/WinGetPackage
       directives:
-        description: Installing Microsoft.SQLServerManagementStudio
+        description: Installing Microsoft.VisualStudio.Community
         allowPrerelease: true
         securityContext: current
       settings:
-        id: "Microsoft.SQLServerManagementStudio"
+        id: " Microsoft.VisualStudio.Community"
         source: winget
-      id: Microsoft.SQLServerManagementStudio
+      id: Microsoft.VisualStudio.Community
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Installing Microsoft.SQLServerManagementStudio.22
+        allowPrerelease: true
+        securityContext: current
+      settings:
+        id: "Microsoft.SQLServerManagementStudio.22"
+        source: winget
+      id: Microsoft.SQLServerManagementStudio.22
     - resource: Microsoft.WinGet.DSC/WinGetPackage
       directives:
         description: Installing Microsoft.PowerToys
@@ -385,15 +394,6 @@ properties:
         id: "Obsidian.Obsidian"
         source: winget
       id: Obsidian.Obsidian
-    - resource: Microsoft.WinGet.DSC/WinGetPackage
-      directives:
-        description: Installing Warp.Warp
-        allowPrerelease: true
-        securityContext: current
-      settings:
-        id: "Warp.Warp"
-        source: winget
-      id: Warp.Warp
     - resource: Microsoft.WinGet.DSC/WinGetPackage
       directives:
         description: Installing VideoLAN.VLC

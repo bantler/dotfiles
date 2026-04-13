@@ -1,0 +1,48 @@
+---
+# Defaults for the wsl_setup role
+
+# Packages per package manager
+pkg_map:
+  apt:
+    - apt-transport-https
+    - software-properties-common
+    - yadm
+    - powershell
+    - python3
+    - python3-venv
+    - cmatrix
+    - bat
+    - fzf
+    - zoxide
+    - eza
+    - direnv
+    - jq
+    - zsh
+    - git
+    - wget
+    - curl
+    - gnupg
+  pacman:
+    - base
+    - git
+    - curl
+    - wget
+    - openssh
+    - python
+    - python-virtualenv
+    - zsh
+  apk:
+    - bash
+    - git
+    - curl
+    - wget
+    - openssh
+    - python3
+    - py3-virtualenv
+    - zsh
+
+# dotfiles repo to clone with yadm
+dotfiles_repo: 'git@github.com:bantler/dotfiles.git'
+
+# tfenv repo
+tfenv_repo: 'https://github.com/tfutils/tfenv.git'
