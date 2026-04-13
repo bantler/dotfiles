@@ -3,7 +3,7 @@
 
 - name: Determine default user (UID 1000)
   become: true
-  ansible.builtin.command: getent passwd 1000 | cut -d: -f1
+  ansible.builtin.command: "getent passwd 1000 | cut -d: -f1"
   register: default_user_cmd
   changed_when: false
   failed_when: false
@@ -139,7 +139,8 @@
   become_user: "{{ default_user }}"
 
 - name: Ensure zsh is default shell for default user
+  become: true
   ansible.builtin.user:
     name: "{{ default_user }}"
     shell: "/usr/bin/zsh"
-  ignore_errors: yes
+  ignore_errors: true

@@ -1,6 +1,5 @@
----
-name: Configure WSL distro
-hosts: all
-become: true
-roles:
-  - wsl_setup
+- name: Configure WSL distro
+  hosts: all
+  become: true
+  roles:
+    - wsl_setup

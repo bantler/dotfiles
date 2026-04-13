@@ -16,7 +16,11 @@ winget configure --Enable
 
 # Apply Winget configuration
 Write-Host "Applying winget configuration"
-winget configure -f ".\configuration.dev.yaml"
+
+Write-Host "Current location: $(Get-Location)"
+pause
+$scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+winget configure -f "$scriptDir\configuration.dev.yaml"
 
 # Install NerdFonts Module
 Write-Host "Installing Nerd Fonts"
