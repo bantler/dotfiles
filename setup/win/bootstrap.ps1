@@ -1,0 +1,235 @@
+[CmdletBinding()]
+param(
+    [Parameter(Mandatory=$false)]
+    [string]$WSL_DISTRO = "Ubuntu-22.04"
+)
+
+# Check if script is running on Windows
+if (-not ($env:OS -eq "Windows_NT")) {
+    throw "This script must be run on Windows."
+}
+
+# Check if script is running with administrator privileges
+$isAdmin = ([Security.Principal.WindowsPrincipal] `
+        [Security.Principal.WindowsIdentity]::GetCurrent()
+    ).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+
+# If not running as admin, throw an error
+if (-not $isAdmin) {
+    throw "This script must be run in administrator mode. Please relaunch as admin."
+}
+
+# Install Windows applications via Winget
+if ((Read-Host "Install Windows applications via Winget? (Y/N)")  -notin @('n','N')) {
+    Write-Host "Enabling Winget configure" -ForegroundColor Cyan
+    winget configure --Enable
+    
+    Write-Host "Applying winget configuration" -ForegroundColor Cyan
+    winget configure -f "$(Split-Path -Parent $MyInvocation.MyCommand.Path)\configuration.dev.yaml"
+    
+    Write-Host "Upgrading all packages" -ForegroundColor Cyan
+    winget upgrade --all --accept-source-agreements --accept-package-agreements
+
+    # Add GnuWin32 to user PATH if not already present
+    $pathToAdd = "C:\Program Files (x86)\GnuWin32\bin"
+    $userPath = [Environment]::GetEnvironmentVariable("Path", "User")
+
+    if ($userPath -notlike "*$pathToAdd*") {
+        [Environment]::SetEnvironmentVariable("Path", "$userPath;$pathToAdd", "User")
+    }
+}
+
+# Install NerdFonts Module# # Install NerdFonts Module
+if ((Read-Host "Would you like to install NerdFonts.com? (Y/N)") -notin @('n','N')) {
+    Write-Host "Installing Nerd Fonts Module from NerdFonts.com" -ForegroundColor Cyan
+    & ([scriptblock]::Create((Invoke-WebRequest 'https://to.loredo.me/Install-NerdFont.ps1')))
+}
+
+# Configure Git user name and email based on registry values from Microsoft Office identity information
+if ((Read-Host "Would you like to configure Git user name and email? (Y/N)") -notin @('n','N')) {
+    try {
+            $identity = Get-ItemProperty "HKCU:\Software\Microsoft\Office\16.0\Common\Identity" -ErrorAction SilentlyContinue
+
+            if ($identity.ADUserName) {
+                Write-Host "Setting Git email to $($identity.ADUserName)" -ForegroundColor Cyan
+                git config --global user.email $identity.ADUserName *> $null
+            }
+
+            if ($identity.ADUserDisplayName) {
+                Write-Host "Setting Git username to $($identity.ADUserDisplayName)" -ForegroundColor Cyan
+                git config --global user.name $identity.ADUserDisplayName *> $null
+            }
+        } catch {
+            throw "Failed to retrieve identity information from registry. Please ensure you are signed in with an MSA or AAD account and have used Office applications at least once."
+        }
+
+        Write-Host "Git configuration applied successfully." -ForegroundColor Green
+}
+
+# Configure SSH keys and OpenSSH Client/Server capabilities for Windows
+if ((Read-Host "Would you like to setup SSH keys and OpenSSH Client/Server capabilities? (Y/N)") -notin @('n','N')) {
+    
+    Write-Host "Checking and enabling OpenSSH Client and Server Windows Capabilities if not already enabled..." -ForegroundColor Cyan
+    
+    $requiredCapabilities = @(
+        "OpenSSH.Client~~~~0.0.1.0",
+        "OpenSSH.Server~~~~0.0.1.0"
+    )
+    
+    foreach ($capabilityName in $requiredCapabilities) {
+        $capability = Get-WindowsCapability -Online | Where-Object Name -like "$capabilityName"
+        
+        if ($capability.State -eq "Installed") {
+            Write-Host "$capabilityName is already installed" -ForegroundColor Yellow
+        }
+        else {
+            Write-Host "$capabilityName is not enabled. Enabling now..." -ForegroundColor Green
+            Add-WindowsCapability -Online -Name $capabilityName
+        }
+    }
+
+    # Start the sshd service
+    Write-Host "Checking sshd service status..." -ForegroundColor Cyan
+    $sshdService = Get-Service -Name sshd
+    if ($sshdService.Status -eq "Running") {
+        Write-Host "sshd service is already running" -ForegroundColor Yellow
+    }
+    else {
+        Write-Host "Starting sshd service..." -ForegroundColor Green
+        Start-Service sshd
+        Write-Host "Setting sshd service to start automatically on boot..." -ForegroundColor Green
+        Set-Service -Name sshd -StartupType 'Automatic'
+    }
+
+    # Confirm the Firewall rule is configured. It should be created automatically by setup. Run the following to verify
+    Write-Host "Verifying Firewall rule for OpenSSH Server (sshd)..." -ForegroundColor Cyan
+    if (!(Get-NetFirewallRule -Name "OpenSSH-Server-In-TCP" -ErrorAction SilentlyContinue)) {
+        Write-Host "Firewall Rule 'OpenSSH-Server-In-TCP' does not exist, creating it..." -ForegroundColor Green
+        New-NetFirewallRule -Name 'OpenSSH-Server-In-TCP' -DisplayName 'OpenSSH Server (sshd)' -Enabled True -Direction Inbound -Protocol TCP -Action Allow -LocalPort 22
+    } else {
+        Write-Host "Firewall rule 'OpenSSH-Server-In-TCP' already exists." -ForegroundColor Yellow
+    }
+
+    # Get email for current user
+    $Email = (Get-ItemProperty "HKCU:\Software\Microsoft\Office\16.0\Common\Identity" -ErrorAction Stop).ADUserName
+
+    # Ensure .ssh directory exists
+    $KeyPath = Join-Path $env:USERPROFILE ".ssh"
+    if (-not (Test-Path $KeyPath)) {
+        New-Item -ItemType Directory -Path $KeyPath | Out-Null
+    }
+
+    Write-Host "Creating SSH keys in $KeyPath" -ForegroundColor Cyan
+
+    # ED25519 KEY
+    $ed25519Path = Join-Path $KeyPath "id_ed25519"
+    if (-not (Test-Path $ed25519Path)) {
+        Write-Host "Generating ED25519 key..." -ForegroundColor Green
+        ssh-keygen -t ed25519 -C $Email -f $ed25519Path
+    } else {
+        Write-Host "ED25519 key already exists, skipping" -ForegroundColor Yellow
+    }
+
+    # RSA KEY
+    $rsaPath = Join-Path $KeyPath "id_rsa"
+    if (-not (Test-Path $rsaPath)) {
+        Write-Host "Generating RSA key (4096-bit)..." -ForegroundColor Green
+        ssh-keygen -t rsa -b 4096 -C $Email -f $rsaPath
+    }
+    else {
+        Write-Host "RSA key already exists, skipping" -ForegroundColor Yellow
+    }
+
+    # Start SSH agent
+    Write-Host "Starting SSH agent..." -ForegroundColor Cyan
+    Start-Service ssh-agent -ErrorAction SilentlyContinue
+    Set-Service ssh-agent -StartupType Automatic
+
+    # # Add keys to agent
+    # Write-Host "Adding keys to SSH agent..." -ForegroundColor Cyan
+    # ssh-add $ed25519Path 2>$null
+    # ssh-add $rsaPath 2>$null
+
+    # Create SSH config
+    $configPath = Join-Path $KeyPath "config"
+
+    $sshHosts = @(
+        @{ Comment = "Default GitHub key"; Host = "github.com"; HostName = "github.com"; IdentityFile = "~/.ssh/id_ed25519"; User = "git" }
+        @{ Comment = "Azure / generic servers"; Host = "azure-*"; User = "azureuser"; IdentityFile = "~/.ssh/id_rsa" }
+        @{ Host = "*"; AddKeysToAgent = "yes"; IdentitiesOnly = "yes" }
+    )
+
+    $configContent = @()
+    foreach ($hostConfig in $sshHosts) {
+        if ($hostConfig.Comment) {
+            $configContent += "# $($hostConfig.Comment)"
+        }
+        $configContent += "Host $($hostConfig.Host)"
+        $hostConfig.GetEnumerator() | Where-Object { $_.Key -notin @("Comment", "Host") } | ForEach-Object {
+            $configContent += "$($_.Key) $($_.Value)"
+        }
+        $configContent += ""
+    }
+
+    $configContent -join "`n" | Out-File -Encoding utf8 $configPath
+
+    Write-Host "SSH config created" -ForegroundColor Green
+
+    # Output public keys
+    Write-Host "Public keys:" -ForegroundColor Cyan
+    Get-Content "$ed25519Path.pub"
+    Get-Content "$rsaPath.pub"
+
+    Write-Host "SSH environment is now configured..." -ForegroundColor Green
+    Write-Host "Please add the public key(s) to your GitHub account, Azure DevOps (RSA), or other git hosting provider to enable SSH authentication." -ForegroundColor Cyan
+}
+
+if ((Read-Host "Would you like to install WSL $WSL_DISTRO? (Y/N)") -notin @('n','N')) {
+
+    # Check and enable required Windows optional features.
+Write-Host "Checking required Windows features are enabled..." -ForegroundColor Cyan
+    $requiredFeatures = @(
+        "Microsoft-Windows-Subsystem-Linux",
+        "VirtualMachinePlatform"
+    )
+        
+    foreach ($featureName in $requiredFeatures) {
+        $feature = Get-WindowsOptionalFeature -Online -FeatureName $featureName
+
+        if ($feature.State -eq "Enabled") {
+            Write-Host "$featureName is already enabled" -ForegroundColor Yellow
+        }
+        else {
+            Write-Host "$featureName is not enabled. Enabling now..." -ForegroundColor Green
+            dism.exe /online /enable-feature /featurename:$featureName /all /norestart
+        }
+    }
+    
+    # Set WSL Setting default to WSL 2
+    Write-Host "Setting WSL default version to 2" -ForegroundColor Cyan
+    wsl --set-default-version 2
+
+    # Set WSL Networking settings
+    Write-Host "Apply configuration for wslconfig" -ForegroundColor Cyan
+    $wslConfig = "$env:USERPROFILE\.wslconfig"
+    $wslConfigContent = "[wsl2]`nnetworkingMode=mirrored`n[experimental]`nhostAddressLoopback=true`nbestEffortDnsParsing=true`nsparseVhd=true"
+    Set-Content -Path $wslConfig -Value $wslConfigContent -Encoding ascii
+
+    # Skip install if the distro already exists.
+    $installedDistros = wsl --list --quiet
+    if ($installedDistros -contains $WSL_DISTRO) {
+        Write-Host "$WSL_DISTRO is already installed." -ForegroundColor Yellow
+        exit 0
+    }
+
+    Write-Host "Proceeding with installation of $WSL_DISTRO..." -ForegroundColor Cyan
+    wsl --install -d $WSL_DISTRO --no-launch
+
+    if ($LASTEXITCODE -eq 0) {
+        Write-Host "$WSL_DISTRO installation completed successfully." -ForegroundColor Green
+    }
+    else {
+        Throw "Failed to install $WSL_DISTRO. Please check the error messages above and try again."
+        exit 1
+    }
+}
