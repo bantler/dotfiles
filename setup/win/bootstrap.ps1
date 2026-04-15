@@ -42,7 +42,8 @@ if ((Read-Host "Install Windows applications via Winget? (Y/N)")  -notin @('n','
 # Install NerdFonts Module# # Install NerdFonts Module
 if ((Read-Host "Would you like to install NerdFonts.com? (Y/N)") -notin @('n','N')) {
     Write-Host "Installing Nerd Fonts Module from NerdFonts.com" -ForegroundColor Cyan
-    & ([scriptblock]::Create((Invoke-WebRequest 'https://to.loredo.me/Install-NerdFont.ps1')))
+    Invoke-WebRequest 'https://to.loredo.me/Install-NerdFont.ps1' -OutFile "$env:TEMP\Install-NerdFont.ps1"
+    & "$env:TEMP\Install-NerdFont.ps1"
 }
 
 # Configure Git user name and email based on registry values from Microsoft Office identity information
@@ -112,6 +113,9 @@ if ((Read-Host "Would you like to setup SSH keys and OpenSSH Client/Server capab
 
     # Get email for current user
     $Email = (Get-ItemProperty "HKCU:\Software\Microsoft\Office\16.0\Common\Identity" -ErrorAction Stop).ADUserName
+    if (-not $Email) {
+        $Email = Read-Host "Enter your email address"
+    }
 
     # Ensure .ssh directory exists
     $KeyPath = Join-Path $env:USERPROFILE ".ssh"
@@ -134,6 +138,7 @@ if ((Read-Host "Would you like to setup SSH keys and OpenSSH Client/Server capab
     $rsaPath = Join-Path $KeyPath "id_rsa"
     if (-not (Test-Path $rsaPath)) {
         Write-Host "Generating RSA key (4096-bit)..." -ForegroundColor Green
+        Write-Host "rsaPath: $rsaPath" -ForegroundColor Green
         ssh-keygen -t rsa -b 4096 -C $Email -f $rsaPath
     }
     else {

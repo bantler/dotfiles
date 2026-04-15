@@ -58,7 +58,7 @@ properties:
         allowPrerelease: true
         securityContext: current
       settings:
-        id: " Microsoft.VisualStudio.Community"
+        id: "Microsoft.VisualStudio.Community"
         source: winget
       id: Microsoft.VisualStudio.Community
     - resource: Microsoft.WinGet.DSC/WinGetPackage
