@@ -1,5 +1,7 @@
 .PHONY: all win wsl wsl-ansible help
 
+WSL_DISTRO ?= Ubuntu-22.04
+
 all: help
 
 help:
@@ -7,7 +9,7 @@ help:
 
 win:
 	@echo "Running Windows PowerShell setup..."
-	@powershell -NoProfile -ExecutionPolicy Bypass -File "./win/windows_setup.ps1"
+	powershell.exe -NoProfile -ExecutionPolicy Bypass -File ./windows/bootstrap.ps1 -WSL_DISTRO $(WSL_DISTRO)
 
 wsl:
 	@echo "Running WSL install script..."

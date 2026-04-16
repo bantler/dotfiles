@@ -1,23 +1,56 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory=$false)]
-    [string]$WSL_DISTRO = "Ubuntu-22.04"
+    [string]$WSL_DISTRO = "Ubuntu-24.04"
 )
+
+Set-StrictMode -Version Latest
+$ErrorActionPreference = "Stop"
 
 # Check if script is running on Windows
 if (-not ($env:OS -eq "Windows_NT")) {
     throw "This script must be run on Windows."
 }
 
-# Check if script is running with administrator privileges
-$isAdmin = ([Security.Principal.WindowsPrincipal] `
-        [Security.Principal.WindowsIdentity]::GetCurrent()
-    ).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
-
-# If not running as admin, throw an error
-if (-not $isAdmin) {
-    throw "This script must be run in administrator mode. Please relaunch as admin."
+function Is-Admin {
+    $id = [Security.Principal.WindowsIdentity]::GetCurrent()
+    $p  = New-Object Security.Principal.WindowsPrincipal($id)
+    return $p.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 }
+
+if (-not (Is-Admin)) {
+    Write-Host "Requesting admin privileges..."
+
+    $args = @(
+        "-NoProfile"
+        "-ExecutionPolicy Bypass"
+        "-File `"$PSCommandPath`""
+        "-WSL_DISTRO `"$WSL_DISTRO`""
+    ) -join ' '
+
+    Start-Process powershell.exe -Verb RunAs -ArgumentList $args | Out-Null
+
+    # CRITICAL: hard exit so Make doesn't hang and no duplicate logic runs
+    exit 0
+}
+
+Write-Host "Running as Administrator" -ForegroundColor Green
+
+Write-Host "" 
+Write-Host "========================================================" -ForegroundColor DarkCyan
+Write-Host "  Local Environment Bootstrap (Windows)" -ForegroundColor Cyan
+Write-Host "========================================================" -ForegroundColor DarkCyan
+Write-Host "This script will guide you through optional setup tasks." -ForegroundColor Gray
+Write-Host "" 
+Write-Host "Planned steps:" -ForegroundColor Cyan
+Write-Host "  1. Install and upgrade Windows apps (Winget)." -ForegroundColor Gray
+Write-Host "  2. Install Nerd Fonts helper module." -ForegroundColor Gray
+Write-Host "  3. Configure Git identity settings." -ForegroundColor Gray
+Write-Host "  4. Setup OpenSSH capabilities and SSH keys." -ForegroundColor Gray
+Write-Host "  5. Install/configure WSL distro: $WSL_DISTRO." -ForegroundColor Gray
+Write-Host "" 
+Write-Host "You will be prompted before each step runs." -ForegroundColor Yellow
+Write-Host ""
 
 # Install Windows applications via Winget
 if ((Read-Host "Install Windows applications via Winget? (Y/N)")  -notin @('n','N')) {
@@ -48,23 +81,30 @@ if ((Read-Host "Would you like to install NerdFonts.com? (Y/N)") -notin @('n','N
 
 # Configure Git user name and email based on registry values from Microsoft Office identity information
 if ((Read-Host "Would you like to configure Git user name and email? (Y/N)") -notin @('n','N')) {
-    try {
-            $identity = Get-ItemProperty "HKCU:\Software\Microsoft\Office\16.0\Common\Identity" -ErrorAction SilentlyContinue
+    $identity = Get-ItemProperty "HKCU:\Software\Microsoft\Office\16.0\Common\Identity" -ErrorAction SilentlyContinue
 
-            if ($identity.ADUserName) {
-                Write-Host "Setting Git email to $($identity.ADUserName)" -ForegroundColor Cyan
-                git config --global user.email $identity.ADUserName *> $null
-            }
+    if ($null -eq $identity) {
+        $Email = Read-Host "Enter your email address"
+        Write-Host "Setting Git email to $Email" -ForegroundColor Cyan
+        git config --global user.email $Email *> $null
 
-            if ($identity.ADUserDisplayName) {
-                Write-Host "Setting Git username to $($identity.ADUserDisplayName)" -ForegroundColor Cyan
-                git config --global user.name $identity.ADUserDisplayName *> $null
-            }
-        } catch {
-            throw "Failed to retrieve identity information from registry. Please ensure you are signed in with an MSA or AAD account and have used Office applications at least once."
+        $Name = Read-Host "Enter your name"
+        Write-Host "Setting Git username to $Name" -ForegroundColor Cyan
+        git config --global user.name $Name *> $null
+    }
+    else {
+        if ($identity.ADUserName) {
+            Write-Host "Setting Git email to $($identity.ADUserName)" -ForegroundColor Cyan
+            git config --global user.email $identity.ADUserName *> $null
         }
 
-        Write-Host "Git configuration applied successfully." -ForegroundColor Green
+        if ($identity.ADUserDisplayName) {
+            Write-Host "Setting Git username to $($identity.ADUserDisplayName)" -ForegroundColor Cyan
+            git config --global user.name $identity.ADUserDisplayName *> $null
+        }
+    }
+
+    Write-Host "Git configuration applied successfully." -ForegroundColor Green
 }
 
 # Configure SSH keys and OpenSSH Client/Server capabilities for Windows
@@ -111,12 +151,6 @@ if ((Read-Host "Would you like to setup SSH keys and OpenSSH Client/Server capab
         Write-Host "Firewall rule 'OpenSSH-Server-In-TCP' already exists." -ForegroundColor Yellow
     }
 
-    # Get email for current user
-    $Email = (Get-ItemProperty "HKCU:\Software\Microsoft\Office\16.0\Common\Identity" -ErrorAction Stop).ADUserName
-    if (-not $Email) {
-        $Email = Read-Host "Enter your email address"
-    }
-
     # Ensure .ssh directory exists
     $KeyPath = Join-Path $env:USERPROFILE ".ssh"
     if (-not (Test-Path $KeyPath)) {
@@ -125,25 +159,21 @@ if ((Read-Host "Would you like to setup SSH keys and OpenSSH Client/Server capab
 
     Write-Host "Creating SSH keys in $KeyPath" -ForegroundColor Cyan
 
+    # Get email for current user
+    $Email = (Get-ItemProperty "HKCU:\Software\Microsoft\Office\16.0\Common\Identity" -ErrorAction Stop).ADUserName
+    if (-not $Email) {
+        $Email = Read-Host "Enter your email address"
+    }
+
     # ED25519 KEY
     $ed25519Path = Join-Path $KeyPath "id_ed25519"
-    if (-not (Test-Path $ed25519Path)) {
-        Write-Host "Generating ED25519 key..." -ForegroundColor Green
-        ssh-keygen -t ed25519 -C $Email -f $ed25519Path
-    } else {
-        Write-Host "ED25519 key already exists, skipping" -ForegroundColor Yellow
-    }
+    Write-Host "Generating ED25519 key..." -ForegroundColor Green
+    ssh-keygen -t ed25519 -C $Email -f $ed25519Path
 
     # RSA KEY
     $rsaPath = Join-Path $KeyPath "id_rsa"
-    if (-not (Test-Path $rsaPath)) {
-        Write-Host "Generating RSA key (4096-bit)..." -ForegroundColor Green
-        Write-Host "rsaPath: $rsaPath" -ForegroundColor Green
-        ssh-keygen -t rsa -b 4096 -C $Email -f $rsaPath
-    }
-    else {
-        Write-Host "RSA key already exists, skipping" -ForegroundColor Yellow
-    }
+    Write-Host "Generating RSA key (4096-bit)..." -ForegroundColor Green
+    ssh-keygen -t rsa -b 4096 -C $Email -f $rsaPath
 
     # Start SSH agent
     Write-Host "Starting SSH agent..." -ForegroundColor Cyan
@@ -176,7 +206,9 @@ if ((Read-Host "Would you like to setup SSH keys and OpenSSH Client/Server capab
         $configContent += ""
     }
 
-    $configContent -join "`n" | Out-File -Encoding utf8 $configPath
+    $configText = $configContent -join "`n"
+    $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+    [System.IO.File]::WriteAllText($configPath, $configText, $utf8NoBom)
 
     Write-Host "SSH config created" -ForegroundColor Green
 
@@ -189,7 +221,7 @@ if ((Read-Host "Would you like to setup SSH keys and OpenSSH Client/Server capab
     Write-Host "Please add the public key(s) to your GitHub account, Azure DevOps (RSA), or other git hosting provider to enable SSH authentication." -ForegroundColor Cyan
 }
 
-if ((Read-Host "Would you like to install WSL $WSL_DISTRO? (Y/N)") -notin @('n','N')) {
+if ((Read-Host "Would you like to install WSL '$WSL_DISTRO'? (Y/N)") -notin @('n','N')) {
 
     # Check and enable required Windows optional features.
 Write-Host "Checking required Windows features are enabled..." -ForegroundColor Cyan
