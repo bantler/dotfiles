@@ -1,0 +1,15 @@
+azure_subscription_id: "YOUR_SUBSCRIPTION_ID"
+azure_default_location: "uksouth"
+
+databricks_profiles:
+  sandbox:
+    host: https://adb-803376027579952.12.azuredatabricks.net
+
+  dev:
+    host: https://adb-2801558395774123.3.azuredatabricks.net
+
+  test:
+    host: https://adb-3649802084738535.15.azuredatabricks.net
+
+  prod:
+    host: https://adb-2457161824201685.5.azuredatabricks.net

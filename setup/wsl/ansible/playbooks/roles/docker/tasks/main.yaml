@@ -1,0 +1,12 @@
+- name: Install Docker
+  apt:
+    name: docker.io
+    state: present
+  when: docker_enabled
+
+- name: Add user to docker group
+  user:
+    name: "{{ ansible_user_id }}"
+    groups: docker
+    append: yes
+  when: docker_enabled

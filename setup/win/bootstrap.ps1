@@ -12,23 +12,23 @@ if (-not ($env:OS -eq "Windows_NT")) {
     throw "This script must be run on Windows."
 }
 
-function Is-Admin {
+function Test-Admin {
     $id = [Security.Principal.WindowsIdentity]::GetCurrent()
     $p  = New-Object Security.Principal.WindowsPrincipal($id)
     return $p.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 }
 
-if (-not (Is-Admin)) {
+if (-not (Test-Admin)) {
     Write-Host "Requesting admin privileges..."
 
-    $args = @(
+    $elevationArgs = @(
         "-NoProfile"
         "-ExecutionPolicy Bypass"
         "-File `"$PSCommandPath`""
         "-WSL_DISTRO `"$WSL_DISTRO`""
     ) -join ' '
 
-    Start-Process powershell.exe -Verb RunAs -ArgumentList $args | Out-Null
+    Start-Process powershell.exe -Verb RunAs -ArgumentList $elevationArgs | Out-Null
 
     # CRITICAL: hard exit so Make doesn't hang and no duplicate logic runs
     exit 0
@@ -44,16 +44,15 @@ Write-Host "This script will guide you through optional setup tasks." -Foregroun
 Write-Host "" 
 Write-Host "Planned steps:" -ForegroundColor Cyan
 Write-Host "  1. Install and upgrade Windows apps (Winget)." -ForegroundColor Gray
-Write-Host "  2. Install Nerd Fonts helper module." -ForegroundColor Gray
-Write-Host "  3. Configure Git identity settings." -ForegroundColor Gray
-Write-Host "  4. Setup OpenSSH capabilities and SSH keys." -ForegroundColor Gray
-Write-Host "  5. Install/configure WSL distro: $WSL_DISTRO." -ForegroundColor Gray
+Write-Host "  2. Configure Git identity settings." -ForegroundColor Gray
+Write-Host "  3. Setup OpenSSH capabilities and SSH keys." -ForegroundColor Gray
+Write-Host "  4. Install/configure WSL distro: $WSL_DISTRO." -ForegroundColor Gray
 Write-Host "" 
 Write-Host "You will be prompted before each step runs." -ForegroundColor Yellow
 Write-Host ""
 
 # Install Windows applications via Winget
-if ((Read-Host "Install Windows applications via Winget? (Y/N)")  -notin @('n','N')) {
+if ((Read-Host "Would you like to install Windows applications via Winget? (Y/N)")  -notin @('n','N')) {
     Write-Host "Enabling Winget configure" -ForegroundColor Cyan
     winget configure --Enable
     
@@ -70,13 +69,6 @@ if ((Read-Host "Install Windows applications via Winget? (Y/N)")  -notin @('n','
     if ($userPath -notlike "*$pathToAdd*") {
         [Environment]::SetEnvironmentVariable("Path", "$userPath;$pathToAdd", "User")
     }
-}
-
-# Install NerdFonts Module# # Install NerdFonts Module
-if ((Read-Host "Would you like to install NerdFonts.com? (Y/N)") -notin @('n','N')) {
-    Write-Host "Installing Nerd Fonts Module from NerdFonts.com" -ForegroundColor Cyan
-    Invoke-WebRequest 'https://to.loredo.me/Install-NerdFont.ps1' -OutFile "$env:TEMP\Install-NerdFont.ps1"
-    & "$env:TEMP\Install-NerdFont.ps1"
 }
 
 # Configure Git user name and email based on registry values from Microsoft Office identity information
@@ -252,21 +244,75 @@ Write-Host "Checking required Windows features are enabled..." -ForegroundColor 
     $wslConfigContent = "[wsl2]`nnetworkingMode=mirrored`n[experimental]`nhostAddressLoopback=true`nbestEffortDnsParsing=true`nsparseVhd=true"
     Set-Content -Path $wslConfig -Value $wslConfigContent -Encoding ascii
 
-    # Skip install if the distro already exists.
-    $installedDistros = wsl --list --quiet
-    if ($installedDistros -contains $WSL_DISTRO) {
-        Write-Host "$WSL_DISTRO is already installed." -ForegroundColor Yellow
-        exit 0
+    $wslDefaultUser = (Read-Host "Enter a default Linux username for '$WSL_DISTRO' (leave blank to skip)").Trim()
+    if ($wslDefaultUser -and $wslDefaultUser -notmatch '^[a-z_][a-z0-9_-]*$') {
+        throw "Invalid Linux username '$wslDefaultUser'. Use lowercase letters, digits, underscores, or hyphens."
     }
 
-    Write-Host "Proceeding with installation of $WSL_DISTRO..." -ForegroundColor Cyan
-    wsl --install -d $WSL_DISTRO --no-launch
+    # Skip installation if the distro already exists, but keep post-install setup available.
+    $installedDistros = wsl --list --quiet
+    $distroAlreadyInstalled = @($installedDistros | ForEach-Object { $_.Trim() }) -contains $WSL_DISTRO
 
-    if ($LASTEXITCODE -eq 0) {
-        Write-Host "$WSL_DISTRO installation completed successfully." -ForegroundColor Green
+    if ($distroAlreadyInstalled) {
+        Write-Host "$WSL_DISTRO is already installed." -ForegroundColor Yellow
     }
     else {
-        Throw "Failed to install $WSL_DISTRO. Please check the error messages above and try again."
-        exit 1
+        Write-Host "Proceeding with installation of $WSL_DISTRO..." -ForegroundColor Cyan
+        wsl --install -d $WSL_DISTRO --no-launch
+
+        if ($LASTEXITCODE -eq 0) {
+            Write-Host "$WSL_DISTRO installation completed successfully." -ForegroundColor Green
+        }
+        else {
+            throw "Failed to install $WSL_DISTRO. Please check the error messages above and try again."
+        }
     }
+
+    if ($wslDefaultUser) {
+        Write-Host "Creating Linux user '$wslDefaultUser' in $WSL_DISTRO..." -ForegroundColor Cyan
+        $createUserCommand = "id -u $wslDefaultUser >/dev/null 2>&1 || useradd -m -s /bin/bash $wslDefaultUser"
+        wsl -d $WSL_DISTRO -u root -- bash -lc $createUserCommand
+        if ($LASTEXITCODE -ne 0) {
+            throw "Failed to create user '$wslDefaultUser' in $WSL_DISTRO."
+        }
+
+        wsl -d $WSL_DISTRO -u root -- usermod -aG sudo $wslDefaultUser
+        if ($LASTEXITCODE -ne 0) {
+            throw "Failed to add '$wslDefaultUser' to sudo group in $WSL_DISTRO."
+        }
+
+        $setDefaultUserCommand = "if [ -f /etc/wsl.conf ] && grep -q '^\[user\]' /etc/wsl.conf; then if grep -q '^default=' /etc/wsl.conf; then sed -i 's/^default=.*/default=$wslDefaultUser/' /etc/wsl.conf; else sed -i '/^\[user\]/a default=$wslDefaultUser' /etc/wsl.conf; fi; else printf '\n[user]\ndefault=$wslDefaultUser\n' >> /etc/wsl.conf; fi"
+        wsl -d $WSL_DISTRO -u root -- bash -lc $setDefaultUserCommand
+        if ($LASTEXITCODE -ne 0) {
+            throw "Failed to set '$wslDefaultUser' as default user in /etc/wsl.conf for $WSL_DISTRO."
+        }
+
+        if ((Read-Host "Set a password for '$wslDefaultUser' now? (Y/N)") -notin @('n','N')) {
+            wsl -d $WSL_DISTRO -u root -- passwd $wslDefaultUser
+            if ($LASTEXITCODE -ne 0) {
+                throw "Failed to set password for '$wslDefaultUser'."
+            }
+        }
+
+        Write-Host "Installing Ansible on $WSL_DISTRO..." -ForegroundColor Cyan
+        wsl -d $WSL_DISTRO -u root -- bash -lc "apt-get update && apt-get install -y ansible"
+        Write-Host "Ansible installed successfully on $WSL_DISTRO" -ForegroundColor Green
+
+        Write-Host "Copying repository files to $WSL_DISTRO..." -ForegroundColor Cyan
+        $src = git rev-parse --show-toplevel
+        $destRoot = "~/source/repos/azuredevops"
+        wsl -d $WSL_DISTRO -u root -- bash -lc "mkdir -p $destRoot && rsync -av --delete '$src/' '$destRoot/automation/'"
+
+        # # Create sudo_as_admin_successful
+        # Write-Host "Creating sudo_as_admin_successful" -ForegroundColor Cyan
+        # wsl -d $WSL_DISTRO -u $wslDefaultUser -- touch /home/$wslDefaultUser/.sudo_as_admin_successful
+
+        # # Create hushlogin
+        # Write-Host "Creating hushlogin." -ForegroundColor Cyan
+        # wsl -d $WSL_DISTRO -u $wslDefaultUser -- touch /home/$wslDefaultUser/.hushlogin
+
+        Write-Host "Applying user configuration by restarting $WSL_DISTRO..." -ForegroundColor Cyan
+        wsl --terminate $WSL_DISTRO
+        Write-Host "Default Linux user is now '$wslDefaultUser' for $WSL_DISTRO." -ForegroundColor Green
+    } 
 }

@@ -1,0 +1,104 @@
+- name: Install zsh
+  apt:
+    name: zsh
+    state: present
+
+- name: Set default shell
+  user:
+    name: "{{ username }}"
+    shell: /usr/bin/zsh
+
+- name: Install zsh autosuggestions plugin
+  git:
+    repo: https://github.com/zsh-users/zsh-autosuggestions
+    dest: "/home/{{ username }}/.zsh/zsh-autosuggestions"
+
+- name: Install zsh syntax highlighting plugin
+  git:
+    repo: https://github.com/zsh-users/zsh-syntax-highlighting
+    dest: "/home/{{ username }}/.zsh/zsh-syntax-highlighting"
+
+- name: Enable Zsh plugins in .zshrc
+  lineinfile:
+    path: "/home/{{ username }}/.zshrc"
+    regexp: '^plugins='
+    line: 'plugins=(git zsh-autosuggestions zsh-syntax-highlighting)'
+
+- name: Ensure syntax highlighting is loaded last
+  lineinfile:
+    path: "/home/{{ username }}/.zshrc"
+    line: "source ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+
+# Initalise starship prompt in zsh
+- name: Ensure Starship init in zsh
+  lineinfile:
+    path: "/home/{{ username }}/.zshrc"
+    line: 'eval "$(starship init zsh)"'
+    create: yes
+
+- name: Create starship config directory
+  file:
+    path: "/home/{{ username }}/.config"
+    state: directory
+
+- name: Add default Starship config
+  copy:
+    dest: "/home/{{ username }}/.config/starship.toml"
+    content: |
+      # ~/.config/starship.toml
+
+      # Get editor completions based on the config schema
+      "$schema" = 'https://starship.rs/config-schema.json'
+
+      # Inserts a blank line between shell prompts
+      add_newline     = true
+      command_timeout = 3600000
+
+      [character]
+      success_symbol = "[➜](bold green)"
+      error_symbol = "[✗](bold red)"
+
+      [os]
+      format      = '[$symbol](bold white) '
+      disabled    = false
+
+# Add zoxide init to zsh
+- name: Initialize zoxide in zsh
+  lineinfile:
+    path: "/home/{{ username }}/.zshrc"
+    line: 'eval "$(zoxide init zsh)"'
+
+# Add alias for zoxide
+- name: Add zoxide aliases
+  lineinfile:
+    path: "/home/{{ username }}/.zshrc"
+    line: "{{ item }}"
+  loop:
+    - "alias cd='z'"
+
+# Add direnv init to zsh
+- name: Enable direnv in zsh
+  lineinfile:
+    path: "/home/{{ username }}/.zshrc"
+    line: 'eval "$(direnv hook zsh)"'
+
+# Add eza aliases
+- name: Add eza aliases
+  lineinfile:
+    path: "/home/{{ username }}/.zshrc"
+    line: "{{ item }}"
+  loop:
+    - "alias ls='eza --icons --group-directories-first'"
+    - "alias ll='eza -lah --icons --group-directories-first'"
+
+# Add Terraform autocomplete
+- name: Enable terraform autocomplete (zsh)
+  lineinfile:
+    path: "/home/{{ username }}/.zshrc"
+    line: 'complete -C /usr/local/bin/terraform terraform'
+
+# Add Tfevn init to zsh
+- name: Enable tfenv in shell
+  lineinfile:
+    path: "/home/{{ username }}/.zshrc"
+    line: 'eval "$(tfenv init -)"'

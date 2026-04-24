@@ -1,0 +1,6 @@
+{% for profile, config in databricks_profiles.items() %}
+[{{ profile }}]
+host      = {{ config.host }}
+auth_type = databricks-cli
+
+{% endfor %}

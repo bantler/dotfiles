@@ -1,0 +1,82 @@
+- name: Install dev packages
+  apt:
+    name: "{{ dev_packages }}"
+    state: present
+
+# Install Starship (cross-shell prompt)
+- name: Install Starship (cross-shell prompt)
+  shell: |
+    curl -sS https://starship.rs/install.sh | sh -s -- -y
+  args:
+    creates: /usr/local/bin/starship
+
+# Install eza (ls replacement)
+- name: Download latest eza release (amd64)
+  get_url:
+    url: https://github.com/eza-community/eza/releases/download/{{ eza_version }}/eza_x86_64-unknown-linux-gnu.tar.gz
+    dest: /tmp/eza.tar.gz
+    mode: '0644'
+
+- name: Extract eza binary
+  unarchive:
+    src: /tmp/eza.tar.gz
+    dest: /tmp/
+    remote_src: yes
+
+- name: Move eza binary to /usr/local/bin
+  copy:
+    src: /tmp/eza
+    dest: /usr/local/bin/eza
+    mode: '0755'
+    remote_src: yes
+
+- name: Cleanup eza archive
+  file:
+    path: /tmp/eza.tar.gz
+    state: absent
+
+# # Install Terraform
+# - name: Download Terraform
+#   get_url:
+#     url: "https://releases.hashicorp.com/terraform/{{ terraform_version }}/terraform_{{ terraform_version }}_linux_amd64.zip"
+#     dest: /tmp/terraform.zip
+#     mode: '0644'
+
+# - name: Unzip Terraform
+#   unarchive:
+#     src: /tmp/terraform.zip
+#     dest: /tmp
+#     remote_src: yes
+
+# - name: Move Terraform binary to /usr/local/bin
+#   copy:
+#     src: /tmp/terraform
+#     dest: /usr/local/bin/terraform
+#     mode: '0755'
+#     remote_src: yes
+
+# - name: Cleanup Terraform zip
+#   file:
+#     path: /tmp/terraform.zip
+#     state: absent
+
+# Install tfenv (Terraform version manager)
+- name: Clone tfenv repository
+  git:
+    repo: https://github.com/tfutils/tfenv.git
+    dest: "/home/{{ username }}/.tfenv"
+    version: master
+
+- name: Add tfenv to PATH
+  lineinfile:
+    path: "/home/{{ username }}/.zshrc"
+    line: 'export PATH="$HOME/.tfenv/bin:$PATH"'
+
+# Install terraform versions with tfenv
+- name: Install pinned Terraform version
+  become_user: "{{ username }}"
+  shell: |
+    export PATH="$HOME/.tfenv/bin:$PATH"
+    tfenv install {{ terraform_version }}
+    tfenv use {{ terraform_version }}
+  when: terraform_version is defined

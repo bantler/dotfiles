@@ -1,0 +1,10 @@
+- hosts: local
+  connection: local
+  become: true
+
+  roles:
+    - wsl
+    # - common
+    # - shell
+    # - git
+    

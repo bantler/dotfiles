@@ -1,20 +1,31 @@
-.PHONY: all win wsl wsl-ansible help
+.PHONY: all bootstrap wsl-dev wsl-base wsl-cloud help
 
+# Linux Distro to be install in WSL
 WSL_DISTRO ?= Ubuntu-22.04
 
-all: help
+# Directory that contains this Makefile
+THIS_DIR := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
+
+# Repo root (automation/)
+REPO_ROOT_WIN := $(abspath $(THIS_DIR)/../..)
+
+# WSL path version of repo root
+REPO_ROOT_WSL := $(shell wsl -d $(WSL_DISTRO) -- wslpath -a "$(REPO_ROOT_WIN)")
 
 help:
 	@printf "Usage:\n  make win         Run Windows PowerShell setup\n  make wsl         Run WSL install script (run inside WSL or have bash available)\n  make wsl-ansible Run Ansible playbook (requires Ansible)\n"
 
-win:
-	@echo "Running Windows PowerShell setup..."
+bootstrap:
+	@echo "Running Windows Bootstrap setup..."
 	powershell.exe -NoProfile -ExecutionPolicy Bypass -File ./windows/bootstrap.ps1 -WSL_DISTRO $(WSL_DISTRO)
 
-wsl:
-	@echo "Running WSL install script..."
-	@bash ./wsl/install.sh
+wsl-base:
+	wsl -d $(WSL_DISTRO) -- bash -lc "cd '$(REPO_ROOT_WSL)/scripts/local environments/wsl' && ansible-playbook -i inventory/local.ini playbooks/base.yaml"
 
-wsl-ansible:
-	@echo "Running Ansible playbook (ensure ansible is installed in your environment)"
-	@ansible-playbook ./wsl/ansible/playbook.yml
+	wsl -d Ubuntu-22.04 -- bash -lc "cd '/mnt/c/Users/CollinM/source/repos/azuredevops/automation/scripts/local environments/wsl' && ansible-playbook -i inventory/local.ini playbooks/base.yaml"
+
+wsl-dev:
+	wsl -d $(WSL_DISTRO) -- bash -lc "cd '$(REPO_ROOT_WSL)/scripts/local environments/wsl' && ansible-playbook -i inventory/local.ini playbooks/dev.yaml"
+
+wsl-cloud:
+	wsl -d $(WSL_DISTRO) -- bash -lc "cd '$(REPO_ROOT_WSL)/scripts/local environments/wsl' && ansible-playbook -i inventory/local.ini playbooks/cloud.yaml"
