@@ -18,6 +18,27 @@ function Test-Admin {
     return $p.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 }
 
+function Get-PropertyIfExists {
+    param(
+        [Parameter(Mandatory = $false)]
+        [object]$Object,
+
+        [Parameter(Mandatory = $true)]
+        [string]$PropertyName
+    )
+
+    if ($null -eq $Object) {
+        return $null
+    }
+
+    $property = $Object.PSObject.Properties[$PropertyName]
+    if ($null -ne $property) {
+        return $property.Value
+    }
+
+    return $null
+}
+
 if (-not (Test-Admin)) {
     Write-Host "Requesting admin privileges..."
 
@@ -75,25 +96,24 @@ if ((Read-Host "Would you like to install Windows applications via Winget? (Y/N)
 if ((Read-Host "Would you like to configure Git user name and email? (Y/N)") -notin @('n','N')) {
     $identity = Get-ItemProperty "HKCU:\Software\Microsoft\Office\16.0\Common\Identity" -ErrorAction SilentlyContinue
 
-    if ($null -eq $identity) {
+    $Email = Get-PropertyIfExists -Object $identity -PropertyName "ADUserName"
+    if (-not $Email) {
         $Email = Read-Host "Enter your email address"
+    }
+
+    if ($Email) {
         Write-Host "Setting Git email to $Email" -ForegroundColor Cyan
         git config --global user.email $Email *> $null
+    }
 
+    $Name = Get-PropertyIfExists -Object $identity -PropertyName "ADUserDisplayName"
+    if (-not $Name) {
         $Name = Read-Host "Enter your name"
+    }
+
+    if ($Name) {
         Write-Host "Setting Git username to $Name" -ForegroundColor Cyan
         git config --global user.name $Name *> $null
-    }
-    else {
-        if ($identity.ADUserName) {
-            Write-Host "Setting Git email to $($identity.ADUserName)" -ForegroundColor Cyan
-            git config --global user.email $identity.ADUserName *> $null
-        }
-
-        if ($identity.ADUserDisplayName) {
-            Write-Host "Setting Git username to $($identity.ADUserDisplayName)" -ForegroundColor Cyan
-            git config --global user.name $identity.ADUserDisplayName *> $null
-        }
     }
 
     Write-Host "Git configuration applied successfully." -ForegroundColor Green
@@ -149,10 +169,31 @@ if ((Read-Host "Would you like to setup SSH keys and OpenSSH Client/Server capab
         New-Item -ItemType Directory -Path $KeyPath | Out-Null
     }
 
+    # Elevated 32-bit and 64-bit sessions can resolve Windows folders differently.
+    $sshKeygenCandidates = @(
+        (Join-Path $env:WINDIR "System32\OpenSSH\ssh-keygen.exe"),
+        (Join-Path $env:WINDIR "Sysnative\OpenSSH\ssh-keygen.exe")
+    )
+
+    $sshKeygenPath = $sshKeygenCandidates | Where-Object { Test-Path $_ } | Select-Object -First 1
+
+    if (-not $sshKeygenPath) {
+        $sshKeygenCommand = Get-Command ssh-keygen -ErrorAction SilentlyContinue
+        if ($sshKeygenCommand -and (Test-Path $sshKeygenCommand.Source)) {
+            $sshKeygenPath = $sshKeygenCommand.Source
+        }
+    }
+
+    if (-not $sshKeygenPath) {
+        $triedLocations = $sshKeygenCandidates -join ", "
+        throw "Unable to find ssh-keygen.exe in this elevated session. Checked: $triedLocations"
+    }
+
     Write-Host "Creating SSH keys in $KeyPath" -ForegroundColor Cyan
 
     # Get email for current user
-    $Email = (Get-ItemProperty "HKCU:\Software\Microsoft\Office\16.0\Common\Identity" -ErrorAction Stop).ADUserName
+    $identity = Get-ItemProperty "HKCU:\Software\Microsoft\Office\16.0\Common\Identity" -ErrorAction SilentlyContinue
+    $Email = Get-PropertyIfExists -Object $identity -PropertyName "ADUserName"
     if (-not $Email) {
         $Email = Read-Host "Enter your email address"
     }
@@ -160,12 +201,12 @@ if ((Read-Host "Would you like to setup SSH keys and OpenSSH Client/Server capab
     # ED25519 KEY
     $ed25519Path = Join-Path $KeyPath "id_ed25519"
     Write-Host "Generating ED25519 key..." -ForegroundColor Green
-    ssh-keygen -t ed25519 -C $Email -f $ed25519Path
+    & $sshKeygenPath -t ed25519 -C $Email -f $ed25519Path
 
     # RSA KEY
     $rsaPath = Join-Path $KeyPath "id_rsa"
     Write-Host "Generating RSA key (4096-bit)..." -ForegroundColor Green
-    ssh-keygen -t rsa -b 4096 -C $Email -f $rsaPath
+    & $sshKeygenPath -t rsa -b 4096 -C $Email -f $rsaPath
 
     # Start SSH agent
     Write-Host "Starting SSH agent..." -ForegroundColor Cyan
@@ -188,10 +229,10 @@ if ((Read-Host "Would you like to setup SSH keys and OpenSSH Client/Server capab
 
     $configContent = @()
     foreach ($hostConfig in $sshHosts) {
-        if ($hostConfig.Comment) {
-            $configContent += "# $($hostConfig.Comment)"
+        if ($hostConfig.ContainsKey("Comment") -and $hostConfig["Comment"]) {
+            $configContent += "# $($hostConfig["Comment"])"
         }
-        $configContent += "Host $($hostConfig.Host)"
+        $configContent += "Host $($hostConfig["Host"])"
         $hostConfig.GetEnumerator() | Where-Object { $_.Key -notin @("Comment", "Host") } | ForEach-Object {
             $configContent += "$($_.Key) $($_.Value)"
         }
@@ -300,8 +341,17 @@ Write-Host "Checking required Windows features are enabled..." -ForegroundColor 
 
         Write-Host "Copying repository files to $WSL_DISTRO..." -ForegroundColor Cyan
         $src = git rev-parse --show-toplevel
-        $destRoot = "~/source/repos/azuredevops"
-        wsl -d $WSL_DISTRO -u root -- bash -lc "mkdir -p $destRoot && rsync -av --delete '$src/' '$destRoot/automation/'"
+        $srcWsl = wsl -d $WSL_DISTRO -u root -- wslpath -a "$src"
+        if ($LASTEXITCODE -ne 0 -or -not $srcWsl) {
+            throw "Failed to convert Windows repo path '$src' to a WSL path."
+        }
+
+        $srcWsl = $srcWsl.Trim()
+        $destRoot = "/home/$wslDefaultUser/.automation"
+        wsl -d $WSL_DISTRO -u root -- bash -lc "mkdir -p '$destRoot' && rsync -av --delete '$srcWsl/' '$destRoot/' && chown -R '${wslDefaultUser}:${wslDefaultUser}' '$destRoot'"
+        if ($LASTEXITCODE -ne 0) {
+            throw "Failed to copy repository files into $WSL_DISTRO using rsync."
+        }
 
         # # Create sudo_as_admin_successful
         # Write-Host "Creating sudo_as_admin_successful" -ForegroundColor Cyan

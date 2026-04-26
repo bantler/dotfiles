@@ -180,13 +180,13 @@ properties:
       id: 9NKSQGP7F2NH
     - resource: Microsoft.WinGet.DSC/WinGetPackage
       directives:
-        description: Installing RazerInc.RazerInstaller
+        description: Installing RazerInc.RazerInstaller.Synapse4
         allowPrerelease: true
         securityContext: current
       settings:
-        id: "RazerInc.RazerInstaller"
+        id: "RazerInc.RazerInstaller.Synapse4"
         source: winget
-      id: RazerInc.RazerInstaller
+      id: RazerInc.RazerInstaller.Synapse4
     - resource: Microsoft.WinGet.DSC/WinGetPackage
       directives:
         description: Installing RaspberryPiFoundation.RaspberryPiImager
@@ -234,15 +234,6 @@ properties:
       id: Microsoft.PowerBI
     - resource: Microsoft.WinGet.DSC/WinGetPackage
       directives:
-        description: Installing MicrosoftCorporation.PowerBIReportBuilder
-        allowPrerelease: true
-        securityContext: current
-      settings:
-        id: "MicrosoftCorporation.PowerBIReportBuilder"
-        source: winget
-      id: MicrosoftCorporation.PowerBIReportBuilder
-    - resource: Microsoft.WinGet.DSC/WinGetPackage
-      directives:
         description: Installing Plex
         allowPrerelease: true
         securityContext: current
@@ -286,15 +277,6 @@ properties:
         id: "Google.Chrome"
         source: winget
       id: Google.Chrome
-    - resource: Microsoft.WinGet.DSC/WinGetPackage
-      directives:
-        description: Installing Canon Inkjet Print Utility
-        allowPrerelease: true
-        securityContext: current
-      settings:
-        id: "9WZDNCRFJ14K"
-        source: msstore
-      id: 9WZDNCRFJ14K
     - resource: Microsoft.WinGet.DSC/WinGetPackage
       directives:
         description: Installing Valve.Steam
