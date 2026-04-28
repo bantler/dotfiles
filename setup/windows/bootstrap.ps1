@@ -266,7 +266,7 @@ if ((Read-Host "Would you like to setup SSH keys and OpenSSH Client/Server capab
 if ((Read-Host "Would you like to install WSL '$WSL_DISTRO'? (Y/N)") -notin @('n','N')) {
 
     # Check and enable required Windows optional features.
-Write-Host "Checking required Windows features are enabled..." -ForegroundColor Cyan
+    Write-Host "Checking required Windows features are enabled..." -ForegroundColor Cyan
     $requiredFeatures = @(
         "Microsoft-Windows-Subsystem-Linux",
         "VirtualMachinePlatform"
@@ -294,10 +294,10 @@ Write-Host "Checking required Windows features are enabled..." -ForegroundColor 
     $wslConfigContent = "[wsl2]`nnetworkingMode=mirrored`n[experimental]`nhostAddressLoopback=true`nbestEffortDnsParsing=true`nsparseVhd=true"
     Set-Content -Path $wslConfig -Value $wslConfigContent -Encoding ascii
 
-    $wslDefaultUser = (Read-Host "Enter a default Linux username for '$WSL_DISTRO' (leave blank to skip)").Trim()
-    if ($wslDefaultUser -and $wslDefaultUser -notmatch '^[a-z_][a-z0-9_-]*$') {
-        throw "Invalid Linux username '$wslDefaultUser'. Use lowercase letters, digits, underscores, or hyphens."
-    }
+    # $wslDefaultUser = (Read-Host "Enter a default Linux username for '$WSL_DISTRO' (leave blank to skip)").Trim()
+    # if ($wslDefaultUser -and $wslDefaultUser -notmatch '^[a-z_][a-z0-9_-]*$') {
+    #     throw "Invalid Linux username '$wslDefaultUser'. Use lowercase letters, digits, underscores, or hyphens."
+    # }
 
     # Skip installation if the distro already exists, but keep post-install setup available.
     $installedDistros = wsl --list --quiet
@@ -318,51 +318,69 @@ Write-Host "Checking required Windows features are enabled..." -ForegroundColor 
         }
     }
 
-    if ($wslDefaultUser) {
-        Write-Host "Creating Linux user '$wslDefaultUser' in $WSL_DISTRO..." -ForegroundColor Cyan
-        $createUserCommand = "id -u $wslDefaultUser >/dev/null 2>&1 || useradd -m -s /bin/bash $wslDefaultUser"
-        wsl -d $WSL_DISTRO -u root -- bash -lc $createUserCommand
-        if ($LASTEXITCODE -ne 0) {
-            throw "Failed to create user '$wslDefaultUser' in $WSL_DISTRO."
-        }
+    Write-Host "Installing Ansible on $WSL_DISTRO..." -ForegroundColor Cyan
+    wsl -d $WSL_DISTRO -u root -- bash -lc "apt-get update && apt-get install -y ansible"
+    Write-Host "Ansible installed successfully on $WSL_DISTRO" -ForegroundColor Green
 
-        wsl -d $WSL_DISTRO -u root -- usermod -aG sudo $wslDefaultUser
-        if ($LASTEXITCODE -ne 0) {
-            throw "Failed to add '$wslDefaultUser' to sudo group in $WSL_DISTRO."
-        }
+    Write-Host "Copying repository files to $WSL_DISTRO..." -ForegroundColor Cyan
+    $srcWsl = wsl -d $WSL_DISTRO -u root -- wslpath -a "$gitRoot"
+    if ($LASTEXITCODE -ne 0 -or -not $srcWsl) {
+        throw "Failed to convert Windows repo path '$gitRoot' to a WSL path."
+    }
 
-        $setDefaultUserCommand = "if [ -f /etc/wsl.conf ] && grep -q '^\[user\]' /etc/wsl.conf; then if grep -q '^default=' /etc/wsl.conf; then sed -i 's/^default=.*/default=$wslDefaultUser/' /etc/wsl.conf; else sed -i '/^\[user\]/a default=$wslDefaultUser' /etc/wsl.conf; fi; else printf '\n[user]\ndefault=$wslDefaultUser\n' >> /etc/wsl.conf; fi"
-        wsl -d $WSL_DISTRO -u root -- bash -lc $setDefaultUserCommand
-        if ($LASTEXITCODE -ne 0) {
-            throw "Failed to set '$wslDefaultUser' as default user in /etc/wsl.conf for $WSL_DISTRO."
-        }
-
-        if ((Read-Host "Set a password for '$wslDefaultUser' now? (Y/N)") -notin @('n','N')) {
-            wsl -d $WSL_DISTRO -u root -- passwd $wslDefaultUser
-            if ($LASTEXITCODE -ne 0) {
-                throw "Failed to set password for '$wslDefaultUser'."
-            }
-        }
-
-        Write-Host "Installing Ansible on $WSL_DISTRO..." -ForegroundColor Cyan
-        wsl -d $WSL_DISTRO -u root -- bash -lc "apt-get update && apt-get install -y ansible"
-        Write-Host "Ansible installed successfully on $WSL_DISTRO" -ForegroundColor Green
-
-        Write-Host "Copying repository files to $WSL_DISTRO..." -ForegroundColor Cyan
-        $srcWsl = wsl -d $WSL_DISTRO -u root -- wslpath -a "$gitRoot"
-        if ($LASTEXITCODE -ne 0 -or -not $srcWsl) {
-            throw "Failed to convert Windows repo path '$gitRoot' to a WSL path."
-        }
-
-        $srcWsl = $srcWsl.Trim()
-        $destRoot = "/home/$wslDefaultUser/.automation"
-        wsl -d $WSL_DISTRO -u root -- bash -lc "mkdir -p '$destRoot' && rsync -av --delete '$srcWsl/' '$destRoot/' && chown -R '${wslDefaultUser}:${wslDefaultUser}' '$destRoot'"
-        if ($LASTEXITCODE -ne 0) {
-            throw "Failed to copy repository files into $WSL_DISTRO using rsync."
-        }
-
-        Write-Host "Applying user configuration by restarting $WSL_DISTRO..." -ForegroundColor Cyan
-        wsl --terminate $WSL_DISTRO
-        Write-Host "Default Linux user is now '$wslDefaultUser' for $WSL_DISTRO." -ForegroundColor Green
-    } 
+    $srcWsl = $srcWsl.Trim()
+    $destRoot = "/root/.automation"
+    wsl -d $WSL_DISTRO -u root -- bash -lc "mkdir -p '$destRoot' && rsync -av --delete '$srcWsl/' '$destRoot/'"
+    if ($LASTEXITCODE -ne 0) {
+        throw "Failed to copy repository files into $WSL_DISTRO using rsync."
+    }
 }
+
+#     if ($wslDefaultUser) {
+#         Write-Host "Creating Linux user '$wslDefaultUser' in $WSL_DISTRO..." -ForegroundColor Cyan
+#         $createUserCommand = "id -u $wslDefaultUser >/dev/null 2>&1 || useradd -m -s /bin/bash $wslDefaultUser"
+#         wsl -d $WSL_DISTRO -u root -- bash -lc $createUserCommand
+#         if ($LASTEXITCODE -ne 0) {
+#             throw "Failed to create user '$wslDefaultUser' in $WSL_DISTRO."
+#         }
+
+#         wsl -d $WSL_DISTRO -u root -- usermod -aG sudo $wslDefaultUser
+#         if ($LASTEXITCODE -ne 0) {
+#             throw "Failed to add '$wslDefaultUser' to sudo group in $WSL_DISTRO."
+#         }
+
+#         $setDefaultUserCommand = "if [ -f /etc/wsl.conf ] && grep -q '^\[user\]' /etc/wsl.conf; then if grep -q '^default=' /etc/wsl.conf; then sed -i 's/^default=.*/default=$wslDefaultUser/' /etc/wsl.conf; else sed -i '/^\[user\]/a default=$wslDefaultUser' /etc/wsl.conf; fi; else printf '\n[user]\ndefault=$wslDefaultUser\n' >> /etc/wsl.conf; fi"
+#         wsl -d $WSL_DISTRO -u root -- bash -lc $setDefaultUserCommand
+#         if ($LASTEXITCODE -ne 0) {
+#             throw "Failed to set '$wslDefaultUser' as default user in /etc/wsl.conf for $WSL_DISTRO."
+#         }
+
+#         if ((Read-Host "Set a password for '$wslDefaultUser' now? (Y/N)") -notin @('n','N')) {
+#             wsl -d $WSL_DISTRO -u root -- passwd $wslDefaultUser
+#             if ($LASTEXITCODE -ne 0) {
+#                 throw "Failed to set password for '$wslDefaultUser'."
+#             }
+#         }
+
+#         Write-Host "Installing Ansible on $WSL_DISTRO..." -ForegroundColor Cyan
+#         wsl -d $WSL_DISTRO -u root -- bash -lc "apt-get update && apt-get install -y ansible"
+#         Write-Host "Ansible installed successfully on $WSL_DISTRO" -ForegroundColor Green
+
+#         Write-Host "Copying repository files to $WSL_DISTRO..." -ForegroundColor Cyan
+#         $srcWsl = wsl -d $WSL_DISTRO -u root -- wslpath -a "$gitRoot"
+#         if ($LASTEXITCODE -ne 0 -or -not $srcWsl) {
+#             throw "Failed to convert Windows repo path '$gitRoot' to a WSL path."
+#         }
+
+#         $srcWsl = $srcWsl.Trim()
+#         $destRoot = "/home/$wslDefaultUser/.automation"
+#         wsl -d $WSL_DISTRO -u root -- bash -lc "mkdir -p '$destRoot' && rsync -av --delete '$srcWsl/' '$destRoot/' && chown -R '${wslDefaultUser}:${wslDefaultUser}' '$destRoot'"
+#         if ($LASTEXITCODE -ne 0) {
+#             throw "Failed to copy repository files into $WSL_DISTRO using rsync."
+#         }
+
+#         Write-Host "Applying user configuration by restarting $WSL_DISTRO..." -ForegroundColor Cyan
+#         wsl --terminate $WSL_DISTRO
+#         Write-Host "Default Linux user is now '$wslDefaultUser' for $WSL_DISTRO." -ForegroundColor Green
+#     } 
+# }

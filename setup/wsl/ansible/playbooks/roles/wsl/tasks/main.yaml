@@ -36,11 +36,18 @@
         append: true
         state: present
 
-    - name: Optionally set user password (hashed)
+    - name: Prompt for user password
+      become: false
+      ansible.builtin.pause:
+        prompt: "Enter password for {{ wsl_default_user }} (leave blank to skip)"
+        echo: false
+      register: user_password_input
+
+    - name: Set user password (hashed)
       ansible.builtin.user:
         name: "{{ wsl_default_user }}"
-        password: "{{ wsl_default_user_password_hash }}"
-      when: wsl_default_user_password_hash is defined and (wsl_default_user_password_hash | length > 0)
+        password: "{{ user_password_input.user_input | password_hash('sha512') }}"
+      when: user_password_input.user_input | length > 0
 
     - name: Ensure /etc/wsl.conf has [user] default
       ansible.builtin.ini_file:
@@ -80,4 +87,4 @@
 
       [interop]
       enabled=true
-      appendWindowsPath=true
+      appendWindowsPath=false

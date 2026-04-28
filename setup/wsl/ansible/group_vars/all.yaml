@@ -1,5 +1,6 @@
 ---
 # Defaults for the wsl_setup role
+wsl_default_user: root
 
 # Packages per package manager
 pkg_map:
@@ -37,6 +38,6 @@ pkg_map:
     - zsh
 
 # dotfiles repo to clone with yadm
-dotfiles_repo: 'git@github.com:bantler/dotfiles.git'
+# dotfiles_repo: 'git@github.com:bantler/dotfiles.git'
 
 zsh_theme: ""
