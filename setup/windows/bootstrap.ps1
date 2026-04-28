@@ -49,7 +49,7 @@ if (-not (Test-Admin)) {
         "-WSL_DISTRO `"$WSL_DISTRO`""
     ) -join ' '
 
-    Start-Process powershell.exe -Verb RunAs -ArgumentList $elevationArgs | Out-Null
+    Start-Process powershell.exe -Verb RunAs -WorkingDirectory (Split-Path -Parent $PSCommandPath) -ArgumentList $elevationArgs | Out-Null
 
     # CRITICAL: hard exit so Make doesn't hang and no duplicate logic runs
     exit 0
@@ -71,6 +71,15 @@ Write-Host "  4. Install/configure WSL distro: $WSL_DISTRO." -ForegroundColor Gr
 Write-Host "" 
 Write-Host "You will be prompted before each step runs." -ForegroundColor Yellow
 Write-Host ""
+
+# Set the current directory to the repository root when available.
+$scriptDir = Split-Path -Parent $PSCommandPath
+$gitRoot = (& git -C $scriptDir rev-parse --show-toplevel 2>$null)
+if ($LASTEXITCODE -eq 0 -and $gitRoot) {
+    Set-Location -Path $gitRoot
+} else {
+    Set-Location -Path $scriptDir
+}
 
 # Install Windows applications via Winget
 if ((Read-Host "Would you like to install Windows applications via Winget? (Y/N)")  -notin @('n','N')) {
@@ -340,10 +349,9 @@ Write-Host "Checking required Windows features are enabled..." -ForegroundColor 
         Write-Host "Ansible installed successfully on $WSL_DISTRO" -ForegroundColor Green
 
         Write-Host "Copying repository files to $WSL_DISTRO..." -ForegroundColor Cyan
-        $src = git rev-parse --show-toplevel
-        $srcWsl = wsl -d $WSL_DISTRO -u root -- wslpath -a "$src"
+        $srcWsl = wsl -d $WSL_DISTRO -u root -- wslpath -a "$gitRoot"
         if ($LASTEXITCODE -ne 0 -or -not $srcWsl) {
-            throw "Failed to convert Windows repo path '$src' to a WSL path."
+            throw "Failed to convert Windows repo path '$gitRoot' to a WSL path."
         }
 
         $srcWsl = $srcWsl.Trim()
@@ -352,14 +360,6 @@ Write-Host "Checking required Windows features are enabled..." -ForegroundColor 
         if ($LASTEXITCODE -ne 0) {
             throw "Failed to copy repository files into $WSL_DISTRO using rsync."
         }
-
-        # # Create sudo_as_admin_successful
-        # Write-Host "Creating sudo_as_admin_successful" -ForegroundColor Cyan
-        # wsl -d $WSL_DISTRO -u $wslDefaultUser -- touch /home/$wslDefaultUser/.sudo_as_admin_successful
-
-        # # Create hushlogin
-        # Write-Host "Creating hushlogin." -ForegroundColor Cyan
-        # wsl -d $WSL_DISTRO -u $wslDefaultUser -- touch /home/$wslDefaultUser/.hushlogin
 
         Write-Host "Applying user configuration by restarting $WSL_DISTRO..." -ForegroundColor Cyan
         wsl --terminate $WSL_DISTRO
