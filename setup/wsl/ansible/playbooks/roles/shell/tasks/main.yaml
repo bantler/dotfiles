@@ -1,33 +1,91 @@
+# Tasks for shell configuration (bash, zsh, starship prompt, etc)
+
+- name: Resolve shell target username
+  ansible.builtin.set_fact:
+    username: "{{ username | default(wsl_default_user | default(default_user | default(ansible_user_id)), true) }}"
+
+- name: Resolve dotfiles root path
+  ansible.builtin.set_fact:
+    dotfiles_root: "{{ dotfiles_root | default((playbook_dir | dirname | dirname | dirname) ~ '/dotfiles', true) }}"
+
+### ZSH Shell configuration ###
+
+# Prompt user to install and configure zsh
+- name: Prompt user to install and configure zsh
+  pause:
+    prompt: "Do you want to install zsh and apply configuration? (yes/no?)"
+  register: install_zsh_prompt
+
+# Install zsh and set as default shell
 - name: Install zsh
   apt:
     name: zsh
     state: present
+  when: install_zsh_prompt.user_input | lower == 'yes'
 
 - name: Set default shell
   user:
     name: "{{ username }}"
     shell: /usr/bin/zsh
+  when: install_zsh_prompt.user_input | lower == 'yes'
 
 - name: Install zsh autosuggestions plugin
   git:
     repo: https://github.com/zsh-users/zsh-autosuggestions
     dest: "/home/{{ username }}/.zsh/zsh-autosuggestions"
+  when: install_zsh_prompt.user_input | lower == 'yes'
 
 - name: Install zsh syntax highlighting plugin
   git:
     repo: https://github.com/zsh-users/zsh-syntax-highlighting
     dest: "/home/{{ username }}/.zsh/zsh-syntax-highlighting"
+  when: install_zsh_prompt.user_input | lower == 'yes'
 
 - name: Enable Zsh plugins in .zshrc
   lineinfile:
     path: "/home/{{ username }}/.zshrc"
     regexp: '^plugins='
     line: 'plugins=(git zsh-autosuggestions zsh-syntax-highlighting)'
+    create: yes
+  when: install_zsh_prompt.user_input | lower == 'yes'
 
 - name: Ensure syntax highlighting is loaded last
   lineinfile:
     path: "/home/{{ username }}/.zshrc"
     line: "source ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+    create: yes
+  when: install_zsh_prompt.user_input | lower == 'yes'
+
+### Starship prompt configuration ###
+
+# Prompt user to install and configure Starship
+- name: Prompt user to install and configure Starship
+  pause:
+    prompt: "Do you want to install Starship and apply configuration? (yes/no?)"
+  register: install_starship_prompt
+
+# Install Starship (cross-shell prompt)
+- name: Install Starship (cross-shell prompt)
+  shell: |
+    curl -sS https://starship.rs/install.sh | sh -s -- -y
+  args:
+    creates: /usr/local/bin/starship
+  when: install_starship_prompt.user_input | lower == 'yes'
+
+# Check default shell and initialize Starship accordingly
+- name: Get default shell
+  shell: |
+    getent passwd {{ username }} | cut -d: -f7
+  register: default_shell
+  when: install_starship_prompt.user_input | lower == 'yes'
+
+# Initialize starship in bash
+- name: Ensure Starship init in bash
+  lineinfile:
+    path: "/home/{{ username }}/.bashrc"
+    line: 'eval "$(starship init bash)"'
+    create: yes
+  when: install_starship_prompt.user_input | lower == 'yes' and '/bash' in default_shell.stdout
 
 # Initalise starship prompt in zsh
 - name: Ensure Starship init in zsh
@@ -35,70 +93,12 @@
     path: "/home/{{ username }}/.zshrc"
     line: 'eval "$(starship init zsh)"'
     create: yes
+  when: install_starship_prompt.user_input | lower == 'yes' and '/zsh' in default_shell.stdout
 
-- name: Create starship config directory
-  file:
-    path: "/home/{{ username }}/.config"
-    state: directory
-
-- name: Add default Starship config
-  copy:
-    dest: "/home/{{ username }}/.config/starship.toml"
-    content: |
-      # ~/.config/starship.toml
-
-      # Get editor completions based on the config schema
-      "$schema" = 'https://starship.rs/config-schema.json'
-
-      # Inserts a blank line between shell prompts
-      add_newline     = true
-      command_timeout = 3600000
-
-      [character]
-      success_symbol = "[➜](bold green)"
-      error_symbol = "[✗](bold red)"
-
-      [os]
-      format      = '[$symbol](bold white) '
-      disabled    = false
-
-# Add zoxide init to zsh
-- name: Initialize zoxide in zsh
-  lineinfile:
-    path: "/home/{{ username }}/.zshrc"
-    line: 'eval "$(zoxide init zsh)"'
-
-# Add alias for zoxide
-- name: Add zoxide aliases
-  lineinfile:
-    path: "/home/{{ username }}/.zshrc"
-    line: "{{ item }}"
-  loop:
-    - "alias cd='z'"
-
-# Add direnv init to zsh
-- name: Enable direnv in zsh
-  lineinfile:
-    path: "/home/{{ username }}/.zshrc"
-    line: 'eval "$(direnv hook zsh)"'
-
-# Add eza aliases
-- name: Add eza aliases
-  lineinfile:
-    path: "/home/{{ username }}/.zshrc"
-    line: "{{ item }}"
-  loop:
-    - "alias ls='eza --icons --group-directories-first'"
-    - "alias ll='eza -lah --icons --group-directories-first'"
-
-# Add Terraform autocomplete
-- name: Enable terraform autocomplete (zsh)
-  lineinfile:
-    path: "/home/{{ username }}/.zshrc"
-    line: 'complete -C /usr/local/bin/terraform terraform'
-
-# Add Tfevn init to zsh
-- name: Enable tfenv in shell
-  lineinfile:
-    path: "/home/{{ username }}/.zshrc"
-    line: 'eval "$(tfenv init -)"'
+# Copy starship configuration files from dotfiles
+- name: Copy starship folder from dotfiles
+  synchronize:
+    src: "{{ dotfiles_root }}/.config/"
+    dest: "/home/{{ username }}/.config/"
+    recursive: yes
+  when: install_starship_prompt.user_input | lower == 'yes'

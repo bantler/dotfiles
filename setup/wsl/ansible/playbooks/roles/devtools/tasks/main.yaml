@@ -3,12 +3,18 @@
     name: "{{ dev_packages }}"
     state: present
 
-# Install Starship (cross-shell prompt)
-- name: Install Starship (cross-shell prompt)
-  shell: |
-    curl -sS https://starship.rs/install.sh | sh -s -- -y
-  args:
-    creates: /usr/local/bin/starship
+# Check pipx-installed apps to avoid re-installing
+- name: Check pipx-installed apps
+  become_user: "{{ username }}"
+  ansible.builtin.command: pipx list --short
+  register: pipx_list
+  changed_when: false
+
+# Install tldr with pipx
+- name: Install tldr with pipx
+  become_user: "{{ username }}"
+  ansible.builtin.command: pipx install tldr
+  when: "'tldr' not in pipx_list.stdout"
 
 # Install eza (ls replacement)
 - name: Download latest eza release (amd64)
@@ -29,6 +35,15 @@
     dest: /usr/local/bin/eza
     mode: '0755'
     remote_src: yes
+
+# Add eza aliases
+- name: Add eza aliases
+  lineinfile:
+    path: "/home/{{ username }}/.zshrc"
+    line: "{{ item }}"
+  loop:
+    - "alias ls='eza --icons --group-directories-first'"
+    - "alias ll='eza -lah --icons --group-directories-first'"
 
 - name: Cleanup eza archive
   file:
@@ -60,6 +75,26 @@
 #     path: /tmp/terraform.zip
 #     state: absent
 
+# Add zoxide init to zsh
+- name: Initialize zoxide in zsh
+  lineinfile:
+    path: "/home/{{ username }}/.zshrc"
+    line: 'eval "$(zoxide init zsh)"'
+
+# Add alias for zoxide
+- name: Add zoxide aliases
+  lineinfile:
+    path: "/home/{{ username }}/.zshrc"
+    line: "{{ item }}"
+  loop:
+    - "alias cd='z'"
+
+# Add direnv init to zsh
+- name: Enable direnv in zsh
+  lineinfile:
+    path: "/home/{{ username }}/.zshrc"
+    line: 'eval "$(direnv hook zsh)"'
+
 # Install tfenv (Terraform version manager)
 - name: Clone tfenv repository
   git:
@@ -80,3 +115,16 @@
     tfenv install {{ terraform_version }}
     tfenv use {{ terraform_version }}
   when: terraform_version is defined
+
+# Add Terraform autocomplete
+- name: Enable terraform autocomplete (zsh)
+  lineinfile:
+    path: "/home/{{ username }}/.zshrc"
+    line: 'complete -C /usr/local/bin/terraform terraform'
+
+# Add tfenv init to zsh
+- name: Enable tfenv in shell
+  lineinfile:
+    path: "/home/{{ username }}/.zshrc"
+    line: 'eval "$(tfenv init -)"'
+

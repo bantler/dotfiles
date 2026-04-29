@@ -2,8 +2,19 @@
 
 # Linux Distro to be install in WSL
 WSL_DISTRO ?= Ubuntu-22.04
-WSL_ANSIBLE_DIR ?= /root/.automation/setup/wsl/ansible
 WSL_USER ?= bantler
+
+# Directory that contains this Makefile
+THIS_DIR := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
+
+# Repo root (automation/)
+REPO_ROOT_WIN := $(CURDIR)/../..
+
+# WSL path version of repo root
+REPO_ROOT_WSL := $(shell wsl -d $(WSL_DISTRO) -- wslpath -a "$(REPO_ROOT_WIN)")
+
+# Default Ansible directory inside the mounted repo in WSL
+WSL_ANSIBLE_DIR ?= $(REPO_ROOT_WSL)/scripts/local environments/wsl/ansible
 
 help:
 	@printf "Usage:\n  make win         Run Windows PowerShell setup\n  make wsl         Run WSL install script (run inside WSL or have bash available)\n  make wsl-ansible Run Ansible playbook (requires Ansible)\n"

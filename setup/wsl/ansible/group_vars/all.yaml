@@ -1,4 +1,3 @@
----
 # Defaults for the wsl_setup role
 wsl_default_user: root
 
@@ -7,37 +6,33 @@ pkg_map:
   apt:
     - apt-transport-https
     - software-properties-common
-    - zsh
+    - build-essential
     - git
     - wget
     - curl
     - gnupg
     - htop
+    - zip
     - unzip
     - ca-certificates
     - lsb-release
     - ripgrep
     - fd-find
-  pacman:
-    - base
-    - git
-    - curl
-    - wget
-    - openssh
-    - python
-    - python-virtualenv
-    - zsh
-  apk:
-    - bash
-    - git
-    - curl
-    - wget
-    - openssh
-    - python3
-    - py3-virtualenv
-    - zsh
-
-# dotfiles repo to clone with yadm
-# dotfiles_repo: 'git@github.com:bantler/dotfiles.git'
-
-zsh_theme: ""
+  # pacman:
+  #   - base
+  #   - git
+  #   - curl
+  #   - wget
+  #   - openssh
+  #   - python
+  #   - python-virtualenv
+  #   - zsh
+  # apk:
+  #   - bash
+  #   - git
+  #   - curl
+  #   - wget
+  #   - openssh
+  #   - python3
+  #   - py3-virtualenv
+  #   - zsh

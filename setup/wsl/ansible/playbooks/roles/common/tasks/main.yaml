@@ -19,24 +19,40 @@
       ansible.builtin.set_fact:
         install_packages: "{{ pkg_map[pkg_mgr] | default([]) }}"
 
+    - name: Validate package map for detected manager
+      ansible.builtin.assert:
+        that:
+          - pkg_map is mapping
+          - pkg_mgr in pkg_map
+        fail_msg: "No package map entry for detected package manager '{{ pkg_mgr }}'."
+
+    - name: Show selected package count
+      ansible.builtin.debug:
+        msg: "pkg_mgr={{ pkg_mgr }}, install_packages_count={{ install_packages | length }}"
+
     - name: Install packages (apt)
       ansible.builtin.apt:
         name: "{{ install_packages }}"
         state: present
-      when: pkg_mgr == 'apt'
+      when:
+        - pkg_mgr == 'apt'
+        - install_packages | length > 0
 
     - name: Install packages (pacman)
       ansible.builtin.pacman:
         name: "{{ install_packages }}"
         state: present
-      when: pkg_mgr == 'pacman'
+      when:
+        - pkg_mgr == 'pacman'
+        - install_packages | length > 0
 
     - name: Install packages (apk)
       ansible.builtin.apk:
         name: "{{ install_packages }}"
         state: present
-      when: pkg_mgr == 'apk'
-  when: pkg_mgr in pkg_map and (pkg_map[pkg_mgr] | length > 0)
+      when:
+        - pkg_mgr == 'apk'
+        - install_packages | length > 0
 
   # APT-specific repo and key tasks
 - name: Add Microsoft packages repo (apt)
@@ -54,17 +70,4 @@
       ansible.builtin.file:
         path: /tmp/packages-microsoft-prod.deb
         state: absent
-  when: pkg_mgr == 'apt'
-
-- name: Install HashiCorp repo (apt)
-  block:
-    - name: Add HashiCorp GPG key
-      ansible.builtin.apt_key:
-        url: https://apt.releases.hashicorp.com/gpg
-        state: present
-
-    - name: Add HashiCorp repository
-      ansible.builtin.apt_repository:
-        repo: "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com {{ ansible_lsb.codename | default(ansible_distribution_release) }} main"
-        state: present
   when: pkg_mgr == 'apt'
