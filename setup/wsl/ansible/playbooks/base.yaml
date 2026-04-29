@@ -3,9 +3,9 @@
   become: true
 
   roles:
-    # - wsl
-    # - common
-    # - shell
+    - wsl
+    - common
     - ssh
-    # - git
+    - git
+    - shell
     

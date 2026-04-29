@@ -34,14 +34,25 @@
       - windows_profile_dir.stat.exists
     fail_msg: "Unable to resolve Windows profile path under /mnt/c/Users. Set windows_user explicitly if auto-detection is incorrect."
     
-- name: Ensure WSL uses Windows SSH directory
+- name: Remove existing SSH symlink if present
+  file:
+    path: "/home/{{ username }}/.ssh"
+    state: absent
+  when: ansible_facts['ansible_local'] is not defined or true
+
+- name: Ensure WSL SSH directory exists with correct permissions
   file:
     path: "/home/{{ username }}/.ssh"
     state: directory
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    mode: '0700'
 
-- name: Symlink Windows SSH folder into WSL
-  file:
-    src: "/mnt/c/Users/{{ windows_user }}/.ssh"
-    dest: "/home/{{ username }}/.ssh"
-    state: link
-    force: yes
+- name: Copy Windows SSH files into WSL with correct permissions
+  ansible.builtin.shell: |
+    cp -f /mnt/c/Users/{{ windows_user }}/.ssh/* /home/{{ username }}/.ssh/ 2>/dev/null || true
+    chown -R {{ username }}:{{ username }} /home/{{ username }}/.ssh
+    chmod 700 /home/{{ username }}/.ssh
+    chmod 600 /home/{{ username }}/.ssh/*
+  args:
+    warn: false

@@ -29,16 +29,30 @@
     shell: /usr/bin/zsh
   when: install_zsh_prompt.user_input | lower == 'yes'
 
+- name: Ensure ansible tmp directory exists for user
+  file:
+    path: "/home/{{ username }}/.ansible/tmp"
+    state: directory
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    mode: '0700'
+
 - name: Install zsh autosuggestions plugin
   git:
     repo: https://github.com/zsh-users/zsh-autosuggestions
     dest: "/home/{{ username }}/.zsh/zsh-autosuggestions"
+    force: yes
+  become_user: "{{ username }}"
+  become: true
   when: install_zsh_prompt.user_input | lower == 'yes'
 
 - name: Install zsh syntax highlighting plugin
   git:
     repo: https://github.com/zsh-users/zsh-syntax-highlighting
     dest: "/home/{{ username }}/.zsh/zsh-syntax-highlighting"
+    force: yes
+  become_user: "{{ username }}"
+  become: true
   when: install_zsh_prompt.user_input | lower == 'yes'
 
 - name: Enable Zsh plugins in .zshrc
@@ -94,6 +108,16 @@
     line: 'eval "$(starship init zsh)"'
     create: yes
   when: install_starship_prompt.user_input | lower == 'yes' and '/zsh' in default_shell.stdout
+
+# Ensure .cache/starship directory exists with correct ownership
+- name: Ensure starship cache directory exists
+  file:
+    path: "/home/{{ username }}/.cache/starship"
+    state: directory
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    mode: '0755'
+  when: install_starship_prompt.user_input | lower == 'yes'
 
 # Copy starship configuration files from dotfiles
 - name: Copy starship folder from dotfiles
