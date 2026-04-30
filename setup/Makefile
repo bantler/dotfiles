@@ -24,7 +24,7 @@ wsl-base:
 	wsl -d $(WSL_DISTRO) -u root -- bash -elc "cd '$(WSL_ANSIBLE_DIR)' && ANSIBLE_CONFIG='$(WSL_ANSIBLE_DIR)/ansible.cfg' ansible-playbook -i inventory/local.ini playbooks/base.yaml -e wsl_default_user=$(WSL_USER)"
 
 wsl-dev:
-	wsl -d $(WSL_DISTRO) -u root -- bash -lc "cd '$(WSL_ANSIBLE_DIR)' && ANSIBLE_CONFIG='$(WSL_ANSIBLE_DIR)/ansible.cfg' ansible-playbook -i inventory/local.ini playbooks/dev.yaml"
+	wsl -d $(WSL_DISTRO) -u root -- bash -elc "cd '$(WSL_ANSIBLE_DIR)' && ANSIBLE_CONFIG='$(WSL_ANSIBLE_DIR)/ansible.cfg' ansible-playbook -i inventory/local.ini playbooks/dev.yaml -e wsl_default_user=$(WSL_USER)"
 
 wsl-cloud:
-	wsl -d $(WSL_DISTRO) -u root -- bash -lc "cd '$(WSL_ANSIBLE_DIR)' && ANSIBLE_CONFIG='$(WSL_ANSIBLE_DIR)/ansible.cfg' ansible-playbook -i inventory/local.ini playbooks/cloud.yaml"
+	wsl -d $(WSL_DISTRO) -u root -- bash -elc "cd '$(WSL_ANSIBLE_DIR)' && ANSIBLE_CONFIG='$(WSL_ANSIBLE_DIR)/ansible.cfg' ansible-playbook -i inventory/local.ini playbooks/cloud.yaml -e wsl_default_user=$(WSL_USER)"

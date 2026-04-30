@@ -9,6 +9,7 @@ pkg_map:
     - build-essential
     - git
     - wget
+    - gpg
     - curl
     - gnupg
     - htop
