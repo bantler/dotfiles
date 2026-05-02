@@ -294,11 +294,6 @@ if ((Read-Host "Would you like to install WSL '$WSL_DISTRO'? (Y/N)") -notin @('n
     $wslConfigContent = "[wsl2]`nnetworkingMode=mirrored`n[experimental]`nhostAddressLoopback=true`nbestEffortDnsParsing=true`nsparseVhd=true"
     Set-Content -Path $wslConfig -Value $wslConfigContent -Encoding ascii
 
-    # $wslDefaultUser = (Read-Host "Enter a default Linux username for '$WSL_DISTRO' (leave blank to skip)").Trim()
-    # if ($wslDefaultUser -and $wslDefaultUser -notmatch '^[a-z_][a-z0-9_-]*$') {
-    #     throw "Invalid Linux username '$wslDefaultUser'. Use lowercase letters, digits, underscores, or hyphens."
-    # }
-
     # Skip installation if the distro already exists, but keep post-install setup available.
     $installedDistros = wsl --list --quiet
     $distroAlreadyInstalled = @($installedDistros | ForEach-Object { $_.Trim() }) -contains $WSL_DISTRO
@@ -319,68 +314,77 @@ if ((Read-Host "Would you like to install WSL '$WSL_DISTRO'? (Y/N)") -notin @('n
     }
 
     Write-Host "Installing Ansible on $WSL_DISTRO..." -ForegroundColor Cyan
-    wsl -d $WSL_DISTRO -u root -- bash -lc "apt-get update && apt-get install -y ansible"
-    Write-Host "Ansible installed successfully on $WSL_DISTRO" -ForegroundColor Green
+    $ansibleInstallScript = @'
+set -euo pipefail
 
-    Write-Host "Copying repository files to $WSL_DISTRO..." -ForegroundColor Cyan
-    $srcWsl = wsl -d $WSL_DISTRO -u root -- wslpath -a "$gitRoot"
-    if ($LASTEXITCODE -ne 0 -or -not $srcWsl) {
-        throw "Failed to convert Windows repo path '$gitRoot' to a WSL path."
-    }
+if [ ! -f /etc/os-release ]; then
+    echo "Unable to detect Linux distribution: /etc/os-release not found."
+    exit 1
+fi
 
-    $srcWsl = $srcWsl.Trim()
-    $destRoot = "/root/.automation"
-    wsl -d $WSL_DISTRO -u root -- bash -lc "mkdir -p '$destRoot' && rsync -av --delete '$srcWsl/' '$destRoot/'"
-    if ($LASTEXITCODE -ne 0) {
-        throw "Failed to copy repository files into $WSL_DISTRO using rsync."
-    }
+. /etc/os-release
+distro_id="${ID:-}"
+distro_like="${ID_LIKE:-}"
+
+is_like() {
+    case " $distro_id $distro_like " in
+        *" $1 "*) return 0 ;;
+        *) return 1 ;;
+    esac
 }
 
-#     if ($wslDefaultUser) {
-#         Write-Host "Creating Linux user '$wslDefaultUser' in $WSL_DISTRO..." -ForegroundColor Cyan
-#         $createUserCommand = "id -u $wslDefaultUser >/dev/null 2>&1 || useradd -m -s /bin/bash $wslDefaultUser"
-#         wsl -d $WSL_DISTRO -u root -- bash -lc $createUserCommand
-#         if ($LASTEXITCODE -ne 0) {
-#             throw "Failed to create user '$wslDefaultUser' in $WSL_DISTRO."
-#         }
+if is_like debian || is_like ubuntu; then
+    apt-get update
+    DEBIAN_FRONTEND=noninteractive apt-get install -y ansible
+elif is_like fedora || is_like rhel || is_like centos || is_like rocky || is_like almalinux; then
+    if command -v dnf >/dev/null 2>&1; then
+        dnf install -y ansible
+    elif command -v yum >/dev/null 2>&1; then
+        yum install -y ansible
+    else
+        echo "Neither dnf nor yum is available on this RHEL-like distro."
+        exit 1
+    fi
+elif is_like arch; then
+    mkdir -p /etc/pacman.d/gnupg
+    chown -R root:root /etc/pacman.d/gnupg
+    chmod 700 /etc/pacman.d/gnupg
+    if ! pacman-key --list-keys >/dev/null 2>&1; then
+        pacman-key --init
+    fi
+    pacman-key --populate archlinux
+    pacman -Sy --noconfirm archlinux-keyring
+    pacman -S --noconfirm ansible
+elif is_like suse || is_like opensuse; then
+    zypper --non-interactive refresh
+    zypper --non-interactive install ansible
+elif is_like alpine; then
+    apk update
+    apk add ansible
+else
+    echo "Unsupported Linux distro for automatic Ansible install: ID=$distro_id ID_LIKE=$distro_like"
+    exit 1
+fi
+'@
+    $ansibleInstallScript = $ansibleInstallScript -replace "`r", ""
 
-#         wsl -d $WSL_DISTRO -u root -- usermod -aG sudo $wslDefaultUser
-#         if ($LASTEXITCODE -ne 0) {
-#             throw "Failed to add '$wslDefaultUser' to sudo group in $WSL_DISTRO."
-#         }
+    $tempScriptPath = Join-Path $env:TEMP "install-ansible-wsl.sh"
+    $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+    [System.IO.File]::WriteAllText($tempScriptPath, $ansibleInstallScript, $utf8NoBom)
 
-#         $setDefaultUserCommand = "if [ -f /etc/wsl.conf ] && grep -q '^\[user\]' /etc/wsl.conf; then if grep -q '^default=' /etc/wsl.conf; then sed -i 's/^default=.*/default=$wslDefaultUser/' /etc/wsl.conf; else sed -i '/^\[user\]/a default=$wslDefaultUser' /etc/wsl.conf; fi; else printf '\n[user]\ndefault=$wslDefaultUser\n' >> /etc/wsl.conf; fi"
-#         wsl -d $WSL_DISTRO -u root -- bash -lc $setDefaultUserCommand
-#         if ($LASTEXITCODE -ne 0) {
-#             throw "Failed to set '$wslDefaultUser' as default user in /etc/wsl.conf for $WSL_DISTRO."
-#         }
+    $resolvedScriptPath = [System.IO.Path]::GetFullPath($tempScriptPath)
+    $normalizedPath = $resolvedScriptPath -replace "\\", "/"
+    $driveLetter = $normalizedPath.Substring(0, 1).ToLowerInvariant()
+    $pathWithoutDrive = $normalizedPath.Substring(3)
+    $wslScriptPath = "/mnt/$driveLetter/$pathWithoutDrive"
 
-#         if ((Read-Host "Set a password for '$wslDefaultUser' now? (Y/N)") -notin @('n','N')) {
-#             wsl -d $WSL_DISTRO -u root -- passwd $wslDefaultUser
-#             if ($LASTEXITCODE -ne 0) {
-#                 throw "Failed to set password for '$wslDefaultUser'."
-#             }
-#         }
+    try {
+        wsl -d $WSL_DISTRO -u root -- bash "$wslScriptPath"
+    }
+    finally {
+        Remove-Item -Path $tempScriptPath -ErrorAction SilentlyContinue
+    }
 
-#         Write-Host "Installing Ansible on $WSL_DISTRO..." -ForegroundColor Cyan
-#         wsl -d $WSL_DISTRO -u root -- bash -lc "apt-get update && apt-get install -y ansible"
-#         Write-Host "Ansible installed successfully on $WSL_DISTRO" -ForegroundColor Green
-
-#         Write-Host "Copying repository files to $WSL_DISTRO..." -ForegroundColor Cyan
-#         $srcWsl = wsl -d $WSL_DISTRO -u root -- wslpath -a "$gitRoot"
-#         if ($LASTEXITCODE -ne 0 -or -not $srcWsl) {
-#             throw "Failed to convert Windows repo path '$gitRoot' to a WSL path."
-#         }
-
-#         $srcWsl = $srcWsl.Trim()
-#         $destRoot = "/home/$wslDefaultUser/.automation"
-#         wsl -d $WSL_DISTRO -u root -- bash -lc "mkdir -p '$destRoot' && rsync -av --delete '$srcWsl/' '$destRoot/' && chown -R '${wslDefaultUser}:${wslDefaultUser}' '$destRoot'"
-#         if ($LASTEXITCODE -ne 0) {
-#             throw "Failed to copy repository files into $WSL_DISTRO using rsync."
-#         }
-
-#         Write-Host "Applying user configuration by restarting $WSL_DISTRO..." -ForegroundColor Cyan
-#         wsl --terminate $WSL_DISTRO
-#         Write-Host "Default Linux user is now '$wslDefaultUser' for $WSL_DISTRO." -ForegroundColor Green
-#     } 
-# }
+    Write-Host "Ansible installed successfully on $WSL_DISTRO" -ForegroundColor Green
+    Pause
+}

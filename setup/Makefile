@@ -1,7 +1,7 @@
-.PHONY: all bootstrap wsl-dev wsl-base wsl-cloud help
+.PHONY: all bootstrap wsl-base wsl-dev wsl-cloud help
 
 # Linux Distro to be install in WSL
-WSL_DISTRO ?= Ubuntu-22.04
+WSL_DISTRO ?= archlinux
 WSL_USER ?= bantler
 
 # Directory that contains this Makefile
