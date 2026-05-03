@@ -1,6 +1,6 @@
 - name: Resolve shell target username
   ansible.builtin.set_fact:
-    username: "{{ username | default(wsl_default_user | default(default_user | default(ansible_user_id)), true) }}"
+    username: "{{ username | default(wsl_default_user | default(default_user | default(ansible_facts['user_id'])), true) }}"
 
 - name: Detect Windows username from host environment
   ansible.builtin.shell: "/mnt/c/Windows/System32/cmd.exe /c echo %USERNAME%"
@@ -16,9 +16,9 @@
           | default(lookup('env', 'USERNAME'), true)
           | default(windows_username_cmd.stdout | trim, true)
           | default((playbook_dir.split('/')[4] if (playbook_dir is defined and playbook_dir.startswith('/mnt/c/Users/')) else ''), true)
-          | default((ansible_env.PWD.split('/')[4] if (ansible_env.PWD is defined and ansible_env.PWD.startswith('/mnt/c/Users/')) else ''), true)
-          | default((ansible_env.SUDO_USER if (ansible_env.SUDO_USER is defined and ansible_env.SUDO_USER != 'root') else ''), true)
-          | default((ansible_env.USER if (ansible_env.USER is defined and ansible_env.USER != 'root') else ''), true)
+            | default((ansible_facts['env']['PWD'].split('/')[4] if (ansible_facts['env']['PWD'] is defined and ansible_facts['env']['PWD'].startswith('/mnt/c/Users/')) else ''), true)
+            | default((ansible_facts['env']['SUDO_USER'] if (ansible_facts['env']['SUDO_USER'] is defined and ansible_facts['env']['SUDO_USER'] != 'root') else ''), true)
+            | default((ansible_facts['env']['USER'] if (ansible_facts['env']['USER'] is defined and ansible_facts['env']['USER'] != 'root') else ''), true)
       }}
 
 - name: Check resolved Windows profile directory
@@ -38,7 +38,7 @@
   file:
     path: "/home/{{ username }}/.ssh"
     state: absent
-  when: ansible_facts['ansible_local'] is not defined or true
+  when: ansible_facts['local'] is not defined or true
 
 - name: Ensure WSL SSH directory exists with correct permissions
   file:
@@ -54,5 +54,3 @@
     chown -R {{ username }}:{{ username }} /home/{{ username }}/.ssh
     chmod 700 /home/{{ username }}/.ssh
     chmod 600 /home/{{ username }}/.ssh/*
-  args:
-    warn: false

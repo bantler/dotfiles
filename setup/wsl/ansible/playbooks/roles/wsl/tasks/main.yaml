@@ -28,6 +28,10 @@
       ansible.builtin.set_fact:
         wsl_user_exists: "{{ user_check.ansible_facts.getent_passwd is defined and (wsl_default_user in user_check.ansible_facts.getent_passwd) }}"
 
+    - name: Determine admin group for current distro
+      ansible.builtin.set_fact:
+        wsl_admin_group: "{{ 'wheel' if ansible_facts.os_family == 'Archlinux' else 'sudo' }}"
+
     - name: Create user and configure as default
       block:
         - name: Create the user
@@ -35,7 +39,7 @@
             name: "{{ wsl_default_user }}"
             shell: /bin/bash
             create_home: true
-            groups: sudo
+            groups: "{{ wsl_admin_group }}"
             append: true
             state: present
 
@@ -47,14 +51,6 @@
             value: "{{ wsl_default_user }}"
             mode: "0644"
             backup: true
-
-        - name: Create .sudo_as_admin_successful
-          ansible.builtin.file:
-            path: "/home/{{ wsl_default_user }}/.sudo_as_admin_successful"
-            state: touch
-            owner: "{{ wsl_default_user }}"
-            group: "{{ wsl_default_user }}"
-            mode: "0644"
 
         - name: Create .hushlogin
           ansible.builtin.file:
@@ -107,10 +103,10 @@
           delay: 0
           no_log: true
 
-        - name: Set user password (hashed)
-          ansible.builtin.user:
-            name: "{{ wsl_default_user }}"
-            password: "{{ user_password_input.user_input | password_hash('sha512') }}"
+        - name: Set user password
+          ansible.builtin.command: chpasswd
+          args:
+            stdin: "{{ wsl_default_user }}:{{ user_password_input.user_input }}"
           no_log: true
       when: wsl_set_user_password
 

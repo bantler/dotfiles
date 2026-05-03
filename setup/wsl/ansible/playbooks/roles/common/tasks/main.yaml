@@ -1,15 +1,6 @@
 - name: Gather package manager
   ansible.builtin.set_fact:
-    pkg_mgr: "{{ ansible_pkg_mgr }}"
-
-- name: Remove stale gierens apt source (eza installed from GitHub)
-  ansible.builtin.file:
-    path: "{{ item }}"
-    state: absent
-  loop:
-    - /etc/apt/sources.list.d/gierens.list
-    - /etc/apt/keyrings/gierens.gpg
-  when: pkg_mgr == 'apt'
+    pkg_mgr: "{{ ansible_facts['pkg_mgr'] }}"
 
 - name: Update package cache (apt)
   ansible.builtin.apt:
@@ -55,50 +46,30 @@
         - pkg_mgr == 'pacman'
         - install_packages | length > 0
 
-    - name: Install packages (apk)
-      ansible.builtin.apk:
-        name: "{{ install_packages }}"
-        state: present
-      when:
-        - pkg_mgr == 'apk'
-        - install_packages | length > 0
-
-# APT-specific repo and key tasks
-- name: Add Microsoft packages repo (apt)
+# Microsoft repository setup is only needed for apt-based systems
+- name: Microsoft repository setup (Ubuntu/Debian)
   block:
-    - name: Download Microsoft packages prod deb
+    - name: Install pre-requisite packages
+      ansible.builtin.apt:
+        name: software-properties-common
+        state: present
+      when: ansible_facts['distribution'] == 'Ubuntu'
+
+    - name: Compute Microsoft repository version
+      ansible.builtin.set_fact:
+        ms_repo_version: "{{ ansible_facts['distribution_version'] if ansible_facts['distribution'] == 'Ubuntu' else ansible_facts['distribution_major_version'] }}"
+
+    - name: Download Microsoft repository package
       ansible.builtin.get_url:
-        url: "https://packages.microsoft.com/config/ubuntu/{{ ansible_distribution_version | default(ansible_lsb.release) }}/packages-microsoft-prod.deb"
+        url: "https://packages.microsoft.com/config/{{ ansible_facts['distribution'] | lower }}/{{ ms_repo_version }}/packages-microsoft-prod.deb"
         dest: /tmp/packages-microsoft-prod.deb
 
-    - name: Install Microsoft packages deb
+    - name: Register Microsoft repository
       ansible.builtin.apt:
         deb: /tmp/packages-microsoft-prod.deb
 
-    - name: Remove Microsoft deb file
+    - name: Remove Microsoft repository package file
       ansible.builtin.file:
         path: /tmp/packages-microsoft-prod.deb
         state: absent
-
-    - name: Download Microsoft GPG key
-      ansible.builtin.shell: wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > /tmp/microsoft.gpg
-
-    - name: Install Microsoft GPG key
-      ansible.builtin.shell: install -D -o root -g root -m 644 /tmp/microsoft.gpg /usr/share/keyrings/microsoft.gpg
-
-    - name: Remove Microsoft GPG file
-      ansible.builtin.file:
-        path: /tmp/microsoft.gpg
-        state: absent
-
-    - name: Add VS Code repository (apt)
-      ansible.builtin.copy:
-        content: |
-          Types: deb
-          URIs: https://packages.microsoft.com/repos/code
-          Suites: stable
-          Components: main
-          Architectures: amd64,arm64,armhf
-          Signed-By: /usr/share/keyrings/microsoft.gpg
-        dest: /etc/apt/sources.list.d/vscode.sources
   when: pkg_mgr == 'apt'

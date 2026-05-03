@@ -5,11 +5,9 @@ wsl_default_user: root
 pkg_map:
   apt:
     - apt-transport-https
-    - software-properties-common
     - build-essential
     - git
     - wget
-    - gpg
     - curl
     - gnupg
     - htop
@@ -19,21 +17,17 @@ pkg_map:
     - lsb-release
     - ripgrep
     - fd-find
-  # pacman:
-  #   - base
-  #   - git
-  #   - curl
-  #   - wget
-  #   - openssh
-  #   - python
-  #   - python-virtualenv
-  #   - zsh
-  # apk:
-  #   - bash
-  #   - git
-  #   - curl
-  #   - wget
-  #   - openssh
-  #   - python3
-  #   - py3-virtualenv
-  #   - zsh
+  pacman:
+    - base
+    - sudo
+    - openssh
+    - git
+    - curl
+    - wget
+    - gnupg
+    - htop
+    - zip
+    - unzip
+    - make
+    - ripgrep
+    - fd

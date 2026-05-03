@@ -336,15 +336,6 @@ is_like() {
 if is_like debian || is_like ubuntu; then
     apt-get update
     DEBIAN_FRONTEND=noninteractive apt-get install -y ansible
-elif is_like fedora || is_like rhel || is_like centos || is_like rocky || is_like almalinux; then
-    if command -v dnf >/dev/null 2>&1; then
-        dnf install -y ansible
-    elif command -v yum >/dev/null 2>&1; then
-        yum install -y ansible
-    else
-        echo "Neither dnf nor yum is available on this RHEL-like distro."
-        exit 1
-    fi
 elif is_like arch; then
     mkdir -p /etc/pacman.d/gnupg
     chown -R root:root /etc/pacman.d/gnupg
@@ -355,12 +346,13 @@ elif is_like arch; then
     pacman-key --populate archlinux
     pacman -Sy --noconfirm archlinux-keyring
     pacman -S --noconfirm ansible
-elif is_like suse || is_like opensuse; then
-    zypper --non-interactive refresh
-    zypper --non-interactive install ansible
-elif is_like alpine; then
-    apk update
-    apk add ansible
+    cat > /etc/profile.d/00-locale.sh <<'EOF'
+export LANG=C.utf8
+export LC_ALL=C.utf8
+export LANGUAGE=C.utf8
+EOF
+    chmod 0644 /etc/profile.d/00-locale.sh
+    printf 'LANG=C.utf8\nLC_ALL=C.utf8\n' > /etc/locale.conf
 else
     echo "Unsupported Linux distro for automatic Ansible install: ID=$distro_id ID_LIKE=$distro_like"
     exit 1
